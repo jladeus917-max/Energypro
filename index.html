@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -76,6 +76,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--primary);background:w
 .solar-auto{background:var(--secondary);color:white;padding:15px;border-radius:var(--radius);text-align:center;margin-bottom:18px;}
 .solar-auto-value{font-size:2rem;font-weight:800;color:var(--solar);}
 .solar-result{display:none;background:white;padding:20px;border-radius:var(--radius-lg);margin-top:18px;}
+.solar-mode{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:15px 0;}
+.solar-mode-card{border:2px solid #fde68a;background:#fff;padding:15px;border-radius:var(--radius);cursor:pointer;text-align:center;font-weight:bold;transition:.2s;}
+.solar-mode-card.active{border-color:var(--solar);background:#fffbeb;color:#92400e;}
+.battery-fields{display:none;margin-top:15px;padding:16px;background:#fff;border:1px solid #fde68a;border-radius:var(--radius);}
+.battery-fields.show{display:block;}
+.battery-result{display:none;margin-top:15px;padding:16px;background:#f0fdf4;border:1px solid #86efac;border-radius:var(--radius);}
+.battery-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.b-metric{background:white;padding:12px;text-align:center;border-radius:10px;border:1px solid #bbf7d0;}
+.b-metric .val{font-size:1.35rem;font-weight:800;color:#047857;}
+.b-metric .lbl{font-size:.65rem;color:#065f46;font-weight:bold;}
+
 .solar-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .s-metric{background:#fffbeb;padding:15px;text-align:center;border:1px solid #fde68a;border-radius:var(--radius);}
 .s-metric .val{font-size:1.6rem;font-weight:800;color:#92400e;}
@@ -281,22 +292,50 @@ input[type=range]{width:100%;accent-color:var(--accent);}
         <div style="font-size:.8rem">CONSUMO DIARIO REAL REGISTRADO</div>
         <div class="solar-auto-value" id="solarAutoCons">0.00 kWh</div>
     </div>
+
+    <div class="solar-mode">
+        <div id="solarModeNoBattery" class="solar-mode-card active" onclick="setSolarMode('noBattery')">☀️ Sin baterías<br><small>Solo paneles solares</small></div>
+        <div id="solarModeBattery" class="solar-mode-card" onclick="setSolarMode('battery')">🔋 Con baterías<br><small>Paneles + banco de baterías</small></div>
+    </div>
+
     <div class="form-grid">
         <div class="input-group"><label>Potencia Panel (W)</label><input type="number" id="solPanelW" value="650" min="1"></div>
         <div class="input-group"><label>Horas Sol Pico (HSP)</label><input type="number" id="solHSP" value="5" min="0.1" step="0.1"></div>
         <div class="input-group"><label>Eficiencia Sistema (%)</label><input type="number" id="solEff" value="80" min="1" max="100"></div>
     </div>
-    <button onclick="calcSolar()" class="btn btn-primary btn-full" style="background:var(--solar)">☀️ Calcular Paneles</button>
+
+    <div id="batteryFields" class="battery-fields">
+        <strong style="color:#065f46;">🔋 Configuración del banco de baterías</strong>
+        <p style="font-size:.78rem;color:var(--light);margin:5px 0 15px;">Estos valores se usan para estimar la capacidad necesaria para la autonomía seleccionada.</p>
+        <div class="form-grid">
+            <div class="input-group"><label>Voltaje del banco</label><select id="batVoltage"><option value="12">12 V</option><option value="24">24 V</option><option value="48" selected>48 V</option></select></div>
+            <div class="input-group"><label>Capacidad de cada batería</label><select id="batAh"><option value="100">100 Ah</option><option value="150">150 Ah</option><option value="200" selected>200 Ah</option><option value="250">250 Ah</option><option value="300">300 Ah</option></select></div>
+            <div class="input-group"><label>Días de autonomía</label><input type="number" id="batDays" value="1" min="0.5" step="0.5"></div>
+            <div class="input-group"><label>Profundidad de descarga (DoD %)</label><input type="number" id="batDoD" value="80" min="10" max="100"></div>
+            <div class="input-group"><label>Eficiencia batería (%)</label><input type="number" id="batEff" value="90" min="50" max="100"></div>
+        </div>
+    </div>
+
+    <button onclick="calcSolar()" class="btn btn-primary btn-full" style="background:var(--solar)">☀️ Calcular Sistema Solar</button>
+
     <div id="solarRes" class="solar-result">
         <div class="solar-metrics">
             <div class="s-metric"><div class="lbl">PANELES NECESARIOS</div><div class="val" id="solPanels">0</div></div>
             <div class="s-metric"><div class="lbl">POTENCIA TOTAL</div><div class="val" id="solTotal">0 W</div></div>
             <div class="s-metric"><div class="lbl">PRODUCCIÓN/PANEL</div><div class="val" id="solProd">0 kWh</div></div>
         </div>
+        <div id="batteryRes" class="battery-result">
+            <div style="font-weight:bold;color:#065f46;margin-bottom:10px;">🔋 Dimensionamiento del banco</div>
+            <div class="battery-metrics">
+                <div class="b-metric"><div class="lbl">CAPACIDAD NECESARIA</div><div class="val" id="batRequiredKwh">0 kWh</div></div>
+                <div class="b-metric"><div class="lbl">BANCO NECESARIO</div><div class="val" id="batRequiredAh">0 Ah</div></div>
+                <div class="b-metric"><div class="lbl">BATERÍAS</div><div class="val" id="batCount">0</div></div>
+                <div class="b-metric"><div class="lbl">CAPACIDAD REAL</div><div class="val" id="batRealKwh">0 kWh</div></div>
+            </div>
+        </div>
         <div id="solNote" style="margin-top:15px;background:#fef3c7;padding:12px;border-radius:8px;font-size:.85rem;color:#92400e;"></div>
     </div>
 </div>
-
 </div>
 
 <!-- MODAL EDICIÓN -->
@@ -343,7 +382,7 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 /* =====================================================
    CONFIGURACIÓN: TU URL DE GOOGLE APPS SCRIPT YA ESTÁ AQUÍ
 ===================================================== */
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxj6Uve75Nu3xERoynGHF64ZFAxRdz0W_cIyWvyYQxdRlsXk1TH8G8MhiRl0xLNLkT6/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwugCfbiiAz9JVCjvAqElPg_zNeauwGaXeJOaHfKBgyrs6aiRztVo6U7EXyEU-bPyr6Cg/exec";
 
 /* =====================================================
    BASE DE DATOS
@@ -766,6 +805,14 @@ function clearInventory(){
     state.inventory=[];saveData();updateUI();
     showToast("🗑️ Inventario limpiado","success");
 }
+function setSolarMode(mode){
+    state.solarMode=mode;
+    document.getElementById("solarModeNoBattery").classList.toggle("active",mode==="noBattery");
+    document.getElementById("solarModeBattery").classList.toggle("active",mode==="battery");
+    document.getElementById("batteryFields").classList.toggle("show",mode==="battery");
+    document.getElementById("batteryRes").style.display="none";
+    saveData();
+}
 function calcSolar(){
     const daily=getDailyTotal();
     if(daily<=0){showToast("⚠️ Agrega equipos primero","error");return;}
@@ -777,15 +824,43 @@ function calcSolar(){
     }
     const production=(panelW*hsp*efficiency)/1000;
     const panels=Math.ceil(daily/production);
+    const totalW=panels*panelW;
+    const mode=state.solarMode||"noBattery";
+    const solar={mode,panelW,hsp,efficiency:efficiency*100,productionPerPanel:production,panels,totalW,dailyKwh:daily};
     document.getElementById("solarRes").style.display="block";
     document.getElementById("solPanels").textContent=panels;
-    document.getElementById("solTotal").textContent=(panels*panelW).toLocaleString("es-CO")+" W";
+    document.getElementById("solTotal").textContent=totalW.toLocaleString("es-CO")+" W";
     document.getElementById("solProd").textContent=production.toFixed(2)+" kWh";
     let note="Para cubrir aproximadamente "+daily.toFixed(2)+" kWh/día con paneles de "+panelW+" W, "+hsp+" HSP y "+(efficiency*100)+"% de eficiencia.";
+    if(mode==="battery"){
+        const voltage=parseFloat(document.getElementById("batVoltage").value);
+        const batteryAh=parseFloat(document.getElementById("batAh").value);
+        const autonomy=parseFloat(document.getElementById("batDays").value);
+        const dod=parseFloat(document.getElementById("batDoD").value)/100;
+        const batEff=parseFloat(document.getElementById("batEff").value)/100;
+        if(![voltage,batteryAh,autonomy,dod,batEff].every(Number.isFinite)||autonomy<=0||dod<=0||batEff<=0){showToast("⚠️ Datos de batería inválidos","error");return;}
+        const requiredKwh=(daily*autonomy)/(dod*batEff);
+        const requiredAh=(requiredKwh*1000)/voltage;
+        const batteries=Math.ceil(requiredAh/batteryAh);
+        const realKwh=(batteries*batteryAh*voltage)/1000;
+        const realUsableKwh=realKwh*dod*batEff;
+        solar.battery={voltage,batteryAh,autonomyDays:autonomy,dod:dod*100,efficiency:batEff*100,requiredKwh,requiredAh,batteries,realKwh,realUsableKwh};
+        document.getElementById("batteryRes").style.display="block";
+        document.getElementById("batRequiredKwh").textContent=requiredKwh.toFixed(2)+" kWh";
+        document.getElementById("batRequiredAh").textContent=Math.ceil(requiredAh).toLocaleString("es-CO")+" Ah";
+        document.getElementById("batCount").textContent=batteries;
+        document.getElementById("batRealKwh").textContent=realKwh.toFixed(2)+" kWh";
+        note+=" 🔋 Banco estimado a "+voltage+" V para "+autonomy+" día(s) de autonomía, usando "+(dod*100)+"% DoD y "+(batEff*100)+"% de eficiencia. Capacidad útil real estimada: "+realUsableKwh.toFixed(2)+" kWh.";
+    }else{
+        document.getElementById("batteryRes").style.display="none";
+        note+=" ☀️ Modo sin baterías: el cálculo dimensiona únicamente la generación fotovoltaica.";
+    }
     if(hsp<3.5) note+=" ⚠️ Las HSP son bajas; revise el recurso solar del lugar.";
     else if(hsp>6) note+=" ☀️ Se está usando una HSP alta; confirme el valor con datos locales.";
     document.getElementById("solNote").textContent=note;
+    state.solar=solar; saveData();
 }
+
 function exportData(){
     const data=JSON.stringify(state,null,2);
     const blob=new Blob([data],{type:"application/json"});
@@ -830,6 +905,7 @@ function showToast(message,type=""){
 }
 document.getElementById("editModal").addEventListener("click",function(event){ if(event.target===event.currentTarget) closeEditModal(); });
 document.addEventListener("keydown",function(event){ if(event.key==="Escape") closeEditModal(); });
+if(!state.solarMode) state.solarMode="noBattery";
 function normalizeOldData(){
     state.inventory=state.inventory.map(eq=>{
         if(!eq.method) eq.method=eq.isKnown?"known":"power";
@@ -839,6 +915,7 @@ function normalizeOldData(){
     });
 }
 normalizeOldData();
+setSolarMode(state.solarMode||"noBattery");
 
 /* =====================================================
    FUNCIÓN DE ENVÍO A GOOGLE SHEETS Y CORREO
@@ -848,47 +925,59 @@ function sendReportToGoogle() {
         showToast("⚠️ Agrega al menos un equipo para generar el informe", "error");
         return;
     }
-    
     saveClientData();
-    
-    const clientEmail = document.getElementById("clientEmail").value.trim();
-    if (!clientEmail || !clientEmail.includes('@')) {
-        showToast("⚠️ Ingresa un email válido del cliente", "error");
-        return;
-    }
-    
-    showToast("📤 Generando informe y enviando al correo...", "success");
-    
-    const payload = {
-        timestamp: new Date().toISOString(),
-        clientData: state.clientData,
-        projectType: state.projectType,
-        projectTypeName: getTypeName(state.projectType),
-        config: state.config,
-        inventory: state.inventory,
-        summary: {
-            totalEquipment: state.inventory.length,
-            dailyKwh: getDailyTotal(),
-            monthlyKwh: getMonthlyTotal(),
-            installedKW: getInstalledPower() / 1000,
-            demandKW: calculateDemand() / 1000,
-            monthlyCost: getMonthlyTotal() * (state.config.tarifa || 850),
-            savingsKwh: calculateTotalSavings().kwh,
-            savingsMoney: calculateTotalSavings().money,
-            savingsCO2: calculateTotalSavings().co2
-        }
+    const clientEmail=document.getElementById("clientEmail").value.trim();
+    if(!clientEmail||!clientEmail.includes("@")){showToast("⚠️ Ingresa un email válido del cliente","error");return;}
+    const solar=state.solar||null;
+    const savings=calculateTotalSavings();
+    const summary={
+        totalEquipment:state.inventory.length,
+        dailyKwh:getDailyTotal(),
+        monthlyKwh:getMonthlyTotal(),
+        installedKW:getInstalledPower()/1000,
+        demandKW:calculateDemand()/1000,
+        monthlyCost:getMonthlyTotal()*(state.config.tarifa||850),
+        savingsKwh:savings.kwh,
+        savingsMoney:savings.money,
+        savingsCO2:savings.co2,
+        solar:solar
     };
-    
-    fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).then(() => {
-        showToast(`✅ ¡Informe enviado a ${clientEmail} y a juanladeusladeus@gmail.com!`, "success");
-    }).catch(error => {
-        console.error(error);
-        showToast("❌ Error al enviar. Verifica la configuración", "error");
+    const payload={
+        action:"sendReport",
+        timestamp:new Date().toISOString(),
+        clientData:state.clientData,
+        projectType:state.projectType,
+        projectTypeName:getTypeName(state.projectType),
+        config:state.config,
+        inventory:state.inventory,
+        reportData:summary,
+        summary:summary
+    };
+    showToast("📤 Generando informe, PDF y enviando al correo...","success");
+    const button=document.querySelector('.report-actions button');
+    if(button){button.disabled=true;button.dataset.oldText=button.textContent;button.textContent="⏳ Enviando...";}
+    fetch(GOOGLE_SCRIPT_URL,{
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload)
+    })
+    .then(async response=>{
+        const text=await response.text();
+        let result;
+        try{result=JSON.parse(text);}catch(e){throw new Error("El servidor respondió con un formato no válido.");}
+        if(!result.success) throw new Error(result.error||"Apps Script no pudo generar el informe.");
+        return result;
+    })
+    .then(result=>{
+        showToast("✅ Informe generado, guardado y enviado correctamente.","success");
+        console.log("EnergyPro respuesta:",result);
+    })
+    .catch(error=>{
+        console.error("EnergyPro envío:",error);
+        showToast("❌ No se pudo enviar: "+error.message,"error");
+    })
+    .finally(()=>{
+        if(button){button.disabled=false;button.textContent=button.dataset.oldText||"🚀 Generar, Guardar y Enviar PDF";}
     });
 }
 </script>
