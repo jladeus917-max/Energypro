@@ -1,663 +1,105 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1e293b">
 <title>EnergyPro - Auditor Energético</title>
-
 <style>
-:root{
-    --primary:#2563eb;
-    --primary-dark:#1d4ed8;
-    --secondary:#1e293b;
-    --accent:#10b981;
-    --solar:#f59e0b;
-    --danger:#ef4444;
-    --warning:#f97316;
-    --bg:#f8fafc;
-    --card:#ffffff;
-    --text:#334155;
-    --light:#64748b;
-    --border:#e2e8f0;
-    --shadow:0 4px 10px rgba(0,0,0,.08);
-    --radius:12px;
-    --radius-lg:16px;
-    --radius-xl:20px;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-    background:var(--bg);
-    color:var(--text);
-    line-height:1.5;
-    padding-bottom:40px;
-}
-
-header{
-    background:linear-gradient(135deg,#1e293b,#0f172a);
-    color:white;
-    padding:28px 20px;
-    text-align:center;
-    position:relative;
-}
-
-header:after{
-    content:"";
-    position:absolute;
-    left:0;
-    right:0;
-    bottom:0;
-    height:4px;
-    background:linear-gradient(90deg,#10b981,#f59e0b,#2563eb);
-}
-
-header h1{
-    font-size:2rem;
-    margin-bottom:5px;
-}
-
-.container{
-    max-width:1400px;
-    margin:auto;
-    padding:20px;
-}
-
-.section{
-    background:white;
-    padding:22px;
-    border-radius:var(--radius-xl);
-    box-shadow:var(--shadow);
-    margin-bottom:22px;
-}
-
-.section-title{
-    font-size:1.15rem;
-    font-weight:bold;
-    color:var(--secondary);
-    margin-bottom:18px;
-    border-bottom:2px solid var(--border);
-    padding-bottom:10px;
-}
-
-/* TIPOS */
-
-.project-setup{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-    gap:12px;
-}
-
-.type-card{
-    background:white;
-    border:2px solid var(--border);
-    border-radius:var(--radius-lg);
-    padding:15px 10px;
-    text-align:center;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.type-card:hover{
-    border-color:var(--primary);
-    transform:translateY(-2px);
-}
-
-.type-card.active{
-    background:#eff6ff;
-    border-color:var(--primary);
-    color:var(--primary);
-}
-
-.type-icon{
-    font-size:2rem;
-    display:block;
-    margin-bottom:6px;
-}
-
-.type-name{
-    font-weight:bold;
-    font-size:.9rem;
-}
-
-/* DASHBOARD */
-
-.dashboard{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-    margin-bottom:22px;
-}
-
-.dash-card{
-    background:white;
-    padding:18px;
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow);
-    border-left:5px solid var(--primary);
-}
-
-.dash-card.accent{
-    border-left-color:var(--accent);
-}
-
-.dash-card.warning{
-    border-left-color:var(--solar);
-}
-
-.dash-label{
-    font-size:.72rem;
-    text-transform:uppercase;
-    color:var(--light);
-    font-weight:bold;
-}
-
-.dash-value{
-    font-size:1.5rem;
-    font-weight:800;
-    color:var(--secondary);
-}
-
-.dash-sub{
-    font-size:.78rem;
-    color:var(--light);
-}
-
-/* FORMULARIOS */
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-    gap:15px;
-    align-items:end;
-}
-
-.input-group label{
-    display:block;
-    margin-bottom:5px;
-    font-weight:bold;
-    font-size:.84rem;
-}
-
-input,select{
-    width:100%;
-    padding:11px 12px;
-    border:2px solid var(--border);
-    border-radius:var(--radius);
-    background:#f8fafc;
-    font-size:.95rem;
-    outline:none;
-}
-
-input:focus,select:focus{
-    border-color:var(--primary);
-    background:white;
-}
-
-.input-hint{
-    font-size:.7rem;
-    color:var(--light);
-    margin-top:4px;
-}
-
-/* BOTONES */
-
-.btn{
-    border:none;
-    border-radius:var(--radius);
-    padding:11px 18px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:.9rem;
-}
-
-.btn-primary{
-    background:var(--primary);
-    color:white;
-}
-
-.btn-primary:hover{
-    background:var(--primary-dark);
-}
-
-.btn-danger{
-    background:#fee2e2;
-    color:var(--danger);
-}
-
-.btn-edit{
-    background:#dbeafe;
-    color:var(--primary);
-}
-
-.btn-secondary{
-    background:var(--secondary);
-    color:white;
-}
-
-.btn-full{
-    width:100%;
-    margin-top:20px;
-}
-
-/* AVANZADO */
-
-.toggle-advanced{
-    display:inline-block;
-    margin-top:18px;
-    padding:9px 15px;
-    background:#f1f5f9;
-    border-radius:20px;
-    cursor:pointer;
-    font-size:.82rem;
-    font-weight:bold;
-    color:var(--light);
-}
-
-.toggle-advanced.active{
-    background:#dbeafe;
-    color:var(--primary);
-}
-
-.advanced-fields{
-    display:none;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-    margin-top:15px;
-    padding-top:15px;
-    border-top:1px dashed var(--border);
-}
-
-.advanced-fields.show{
-    display:grid;
-}
-
-/* INVENTARIO */
-
-.equip-list{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.equip-card{
-    border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    padding:17px;
-    background:white;
-}
-
-.equip-header{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:12px;
-}
-
-.equip-name{
-    font-weight:bold;
-    color:var(--secondary);
-}
-
-.equip-badge{
-    background:#f1f5f9;
-    color:var(--light);
-    padding:3px 8px;
-    border-radius:10px;
-    font-size:.7rem;
-    white-space:nowrap;
-}
-
-.equip-specs{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:10px;
-}
-
-.spec-item strong{
-    display:block;
-    font-size:.68rem;
-    text-transform:uppercase;
-    color:var(--light);
-}
-
-.spec-val{
-    font-weight:bold;
-}
-
-.highlight{
-    color:var(--accent);
-}
-
-.elec-details{
-    background:#f8fafc;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:12px;
-    border:1px solid var(--border);
-    font-size:.82rem;
-}
-
-.elec-row{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:3px;
-}
-
-.equip-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:8px;
-    margin-top:14px;
-}
-
-.empty{
-    text-align:center;
-    padding:40px 20px;
-    color:var(--light);
-}
-
-/* GRAFICOS SIN LIBRERIAS */
-
-.charts-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:20px;
-}
-
-.chart-box{
-    min-height:280px;
-}
-
-.bar-item{
-    margin-bottom:12px;
-}
-
-.bar-label{
-    display:flex;
-    justify-content:space-between;
-    font-size:.78rem;
-    margin-bottom:4px;
-}
-
-.bar-bg{
-    height:22px;
-    background:#e2e8f0;
-    border-radius:8px;
-    overflow:hidden;
-}
-
-.bar-fill{
-    height:100%;
-    background:#2563eb;
-    border-radius:8px;
-}
-
-.cat-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:10px;
-}
-
-.cat-dot{
-    width:14px;
-    height:14px;
-    border-radius:50%;
-    flex:none;
-}
-
-.cat-info{
-    flex:1;
-}
-
-.cat-name{
-    font-weight:bold;
-    font-size:.82rem;
-}
-
-.cat-value{
-    font-size:.75rem;
-    color:var(--light);
-}
-
-/* SOLAR Y AHORRO */
-
-.solar-section{
-    background:linear-gradient(135deg,#fffbeb,#fef3c7);
-    border:2px solid var(--solar);
-}
-
-.saving-section {
-    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
-    border: 2px solid var(--accent);
-}
-
-.solar-auto{
-    background:var(--secondary);
-    color:white;
-    padding:15px;
-    border-radius:var(--radius);
-    text-align:center;
-    margin-bottom:18px;
-}
-
-.solar-auto-value{
-    font-size:2rem;
-    font-weight:800;
-    color:var(--solar);
-}
-
-.solar-result{
-    display:none;
-    background:white;
-    padding:20px;
-    border-radius:var(--radius-lg);
-    margin-top:18px;
-}
-
-.solar-metrics{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.s-metric{
-    background:#fffbeb;
-    padding:15px;
-    text-align:center;
-    border:1px solid #fde68a;
-    border-radius:var(--radius);
-}
-
-.s-metric .val{
-    font-size:1.6rem;
-    font-weight:800;
-    color:#92400e;
-}
-
-.s-metric .lbl{
-    font-size:.68rem;
-    color:#78350f;
-    font-weight:bold;
-}
-
-/* AHORRO ESPECIFICO */
-.savings-summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.save-card {
-    background: white;
-    border: 1px solid #a7f3d0;
-    padding: 15px;
-    border-radius: var(--radius);
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.save-card .label {
-    font-size: 0.8rem;
-    color: #065f46;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.save-card .value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #047857;
-    margin-top: 5px;
-}
-
-.auto-save-controls {
-    background: white;
-    padding: 20px;
-    border-radius: var(--radius);
-    border: 1px solid #d1fae5;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.range-container {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-input[type=range] {
-    width: 100%;
-    accent-color: var(--accent);
-}
-
-/* MODAL */
-
-.modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    z-index:1000;
-}
-
-.modal-overlay.active{
-    display:flex;
-}
-
-.modal{
-    background:white;
-    width:100%;
-    max-width:650px;
-    max-height:90vh;
-    overflow:auto;
-    padding:22px;
-    border-radius:var(--radius-xl);
-}
-
-/* TOAST */
-
-.toast{
-    position:fixed;
-    bottom:20px;
-    left:50%;
-    transform:translate(-50%,120px);
-    background:var(--secondary);
-    color:white;
-    padding:13px 20px;
-    border-radius:var(--radius);
-    font-weight:bold;
-    z-index:2000;
-    opacity:0;
-    transition:.3s;
-    text-align:center;
-    max-width:90%;
-}
-
-.toast.show{
-    transform:translate(-50%,0);
-    opacity:1;
-}
-
-.toast.success{
-    background:var(--accent);
-}
-
-.toast.error{
-    background:var(--danger);
-}
-
-/* CONFIG */
-
-.config-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:12px;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:900px){
-    .dashboard{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .charts-grid{
-        grid-template-columns:1fr;
-    }
-}
-
-@media(max-width:500px){
-    .container{
-        padding:12px;
-    }
-
-    .section{
-        padding:17px;
-    }
-
-    .dashboard{
-        grid-template-columns:1fr;
-    }
-
-    .project-setup{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .solar-metrics{
-        grid-template-columns:1fr;
-    }
-
-    header h1{
-        font-size:1.7rem;
-    }
-    
-    .auto-save-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--secondary:#1e293b;--accent:#10b981;--solar:#f59e0b;--danger:#ef4444;--warning:#f97316;--bg:#f8fafc;--card:#ffffff;--text:#334155;--light:#64748b;--border:#e2e8f0;--shadow:0 4px 10px rgba(0,0,0,.08);--radius:12px;--radius-lg:16px;--radius-xl:20px;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+body{background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:40px;}
+header{background:linear-gradient(135deg,#1e293b,#0f172a);color:white;padding:28px 20px;text-align:center;position:relative;}
+header:after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,#10b981,#f59e0b,#2563eb);}
+header h1{font-size:2rem;margin-bottom:5px;}
+.container{max-width:1400px;margin:auto;padding:20px;}
+.section{background:white;padding:22px;border-radius:var(--radius-xl);box-shadow:var(--shadow);margin-bottom:22px;}
+.section-title{font-size:1.15rem;font-weight:bold;color:var(--secondary);margin-bottom:18px;border-bottom:2px solid var(--border);padding-bottom:10px;}
+.project-setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;}
+.type-card{background:white;border:2px solid var(--border);border-radius:var(--radius-lg);padding:15px 10px;text-align:center;cursor:pointer;transition:.2s;}
+.type-card:hover{border-color:var(--primary);transform:translateY(-2px);}
+.type-card.active{background:#eff6ff;border-color:var(--primary);color:var(--primary);}
+.type-icon{font-size:2rem;display:block;margin-bottom:6px;}
+.type-name{font-weight:bold;font-size:.9rem;}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:22px;}
+.dash-card{background:white;padding:18px;border-radius:var(--radius-lg);box-shadow:var(--shadow);border-left:5px solid var(--primary);}
+.dash-card.accent{border-left-color:var(--accent);}
+.dash-card.warning{border-left-color:var(--solar);}
+.dash-label{font-size:.72rem;text-transform:uppercase;color:var(--light);font-weight:bold;}
+.dash-value{font-size:1.5rem;font-weight:800;color:var(--secondary);}
+.dash-sub{font-size:.78rem;color:var(--light);}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px;align-items:end;}
+.input-group label{display:block;margin-bottom:5px;font-weight:bold;font-size:.84rem;}
+input,select,textarea{width:100%;padding:11px 12px;border:2px solid var(--border);border-radius:var(--radius);background:#f8fafc;font-size:.95rem;outline:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);background:white;}
+.input-hint{font-size:.7rem;color:var(--light);margin-top:4px;}
+.btn{border:none;border-radius:var(--radius);padding:11px 18px;font-weight:bold;cursor:pointer;font-size:.9rem;}
+.btn-primary{background:var(--primary);color:white;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-danger{background:#fee2e2;color:var(--danger);}
+.btn-edit{background:#dbeafe;color:var(--primary);}
+.btn-secondary{background:var(--secondary);color:white;}
+.btn-success{background:var(--accent);color:white;}
+.btn-success:hover{background:#059669;}
+.btn-full{width:100%;margin-top:20px;}
+.toggle-advanced{display:inline-block;margin-top:18px;padding:9px 15px;background:#f1f5f9;border-radius:20px;cursor:pointer;font-size:.82rem;font-weight:bold;color:var(--light);}
+.toggle-advanced.active{background:#dbeafe;color:var(--primary);}
+.advanced-fields{display:none;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-top:15px;padding-top:15px;border-top:1px dashed var(--border);}
+.advanced-fields.show{display:grid;}
+.equip-list{display:flex;flex-direction:column;gap:12px;}
+.equip-card{border:1px solid var(--border);border-radius:var(--radius-lg);padding:17px;background:white;}
+.equip-header{display:flex;justify-content:space-between;gap:10px;margin-bottom:12px;}
+.equip-name{font-weight:bold;color:var(--secondary);}
+.equip-badge{background:#f1f5f9;color:var(--light);padding:3px 8px;border-radius:10px;font-size:.7rem;white-space:nowrap;}
+.equip-specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+.spec-item strong{display:block;font-size:.68rem;text-transform:uppercase;color:var(--light);}
+.spec-val{font-weight:bold;}
+.highlight{color:var(--accent);}
+.elec-details{background:#f8fafc;padding:10px;border-radius:8px;margin-bottom:12px;border:1px solid var(--border);font-size:.82rem;}
+.elec-row{display:flex;justify-content:space-between;margin-bottom:3px;}
+.equip-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;}
+.empty{text-align:center;padding:40px 20px;color:var(--light);}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.chart-box{min-height:280px;}
+.bar-item{margin-bottom:12px;}
+.bar-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px;}
+.bar-bg{height:22px;background:#e2e8f0;border-radius:8px;overflow:hidden;}
+.bar-fill{height:100%;background:#2563eb;border-radius:8px;}
+.cat-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cat-dot{width:14px;height:14px;border-radius:50%;flex:none;}
+.cat-info{flex:1;}
+.cat-name{font-weight:bold;font-size:.82rem;}
+.cat-value{font-size:.75rem;color:var(--light);}
+.solar-section{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid var(--solar);}
+.saving-section{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid var(--accent);}
+.client-section{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid var(--primary);}
+.solar-auto{background:var(--secondary);color:white;padding:15px;border-radius:var(--radius);text-align:center;margin-bottom:18px;}
+.solar-auto-value{font-size:2rem;font-weight:800;color:var(--solar);}
+.solar-result{display:none;background:white;padding:20px;border-radius:var(--radius-lg);margin-top:18px;}
+.solar-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.s-metric{background:#fffbeb;padding:15px;text-align:center;border:1px solid #fde68a;border-radius:var(--radius);}
+.s-metric .val{font-size:1.6rem;font-weight:800;color:#92400e;}
+.s-metric .lbl{font-size:.68rem;color:#78350f;font-weight:bold;}
+.savings-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px;}
+.save-card{background:white;border:1px solid #a7f3d0;padding:15px;border-radius:var(--radius);text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.05);}
+.save-card .label{font-size:0.8rem;color:#065f46;font-weight:bold;text-transform:uppercase;}
+.save-card .value{font-size:1.4rem;font-weight:800;color:#047857;margin-top:5px;}
+.auto-save-controls{background:white;padding:20px;border-radius:var(--radius);border:1px solid #d1fae5;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.range-container{flex:1;display:flex;align-items:center;gap:15px;}
+input[type=range]{width:100%;accent-color:var(--accent);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000;}
+.modal-overlay.active{display:flex;}
+.modal{background:white;width:100%;max-width:650px;max-height:90vh;overflow:auto;padding:22px;border-radius:var(--radius-xl);}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);background:var(--secondary);color:white;padding:13px 20px;border-radius:var(--radius);font-weight:bold;z-index:2000;opacity:0;transition:.3s;text-align:center;max-width:90%;}
+.toast.show{transform:translate(-50%,0);opacity:1;}
+.toast.success{background:var(--accent);}
+.toast.error{background:var(--danger);}
+.config-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.report-actions{display:flex;gap:10px;flex-wrap:wrap;padding:15px;background:#f0f9ff;border-radius:var(--radius);border:2px dashed var(--primary);margin-bottom:20px;}
+@media(max-width:900px){.dashboard{grid-template-columns:repeat(2,1fr);}.charts-grid{grid-template-columns:1fr;}}
+@media(max-width:500px){.container{padding:12px;}.section{padding:17px;}.dashboard{grid-template-columns:1fr;}.project-setup{grid-template-columns:repeat(2,1fr);}.solar-metrics{grid-template-columns:1fr;}header h1{font-size:1.7rem;}.auto-save-controls{flex-direction:column;align-items:stretch;}}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -667,3454 +109,793 @@ input[type=range] {
 
 <div class="container">
 
-<!-- TIPO DE INSTALACIÓN -->
+<!-- ACCIONES DE INFORME -->
+<div class="report-actions">
+    <div style="flex:1;">
+        <strong style="color:var(--primary);">📄 Generación y Envío de Informes</strong>
+        <p style="font-size:0.85rem;color:var(--light);margin-top:5px;">
+            Complete los datos del cliente. Al enviar, se guardará en Sheets y se enviará un PDF al correo.
+        </p>
+    </div>
+    <button class="btn btn-success" onclick="sendReportToGoogle()">🚀 Generar, Guardar y Enviar PDF</button>
+</div>
 
+<!-- DATOS DEL CLIENTE -->
+<div class="section client-section">
+    <div class="section-title" style="color:var(--primary);border-color:var(--primary);">👤 Datos del Cliente y Auditoría</div>
+    <div class="form-grid">
+        <div class="input-group"><label>Nombre del Cliente</label><input type="text" id="clientName" placeholder="Ej: Empresa XYZ S.A.S" onchange="saveClientData()"></div>
+        <div class="input-group"><label>NIT / Identificación</label><input type="text" id="clientNit" placeholder="Ej: 900.123.456-7" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Dirección del Proyecto</label><input type="text" id="clientAddress" placeholder="Ej: Calle 100 # 50-20" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Teléfono de Contacto</label><input type="text" id="clientPhone" placeholder="Ej: +57 300 123 4567" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Email de Contacto</label><input type="email" id="clientEmail" placeholder="cliente@empresa.com" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Nombre del Auditor</label><input type="text" id="auditorName" placeholder="Ej: Ing. Juan Pérez" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Fecha de Auditoría</label><input type="date" id="auditDate" onchange="saveClientData()"></div>
+        <div class="input-group"><label>N° de Informe</label><input type="text" id="reportNumber" placeholder="Ej: AUD-2026-001" onchange="saveClientData()"></div>
+    </div>
+    <div class="input-group" style="margin-top:15px;">
+        <label>Observaciones / Recomendaciones</label>
+        <textarea id="auditNotes" rows="3" placeholder="Notas adicionales del informe..." onchange="saveClientData()"></textarea>
+    </div>
+</div>
+
+<!-- TIPO DE INSTALACIÓN -->
 <div class="section">
     <div class="section-title">🏗️ Tipo de Instalación</div>
-
     <div class="project-setup">
-
-        <div class="type-card active"
-             onclick="setProjectType('home',this)">
-            <span class="type-icon">🏠</span>
-            <div class="type-name">Vivienda</div>
-        </div>
-
-        <div class="type-card"
-             onclick="setProjectType('building',this)">
-            <span class="type-icon">🏢</span>
-            <div class="type-name">Edificio</div>
-        </div>
-
-        <div class="type-card"
-             onclick="setProjectType('commerce',this)">
-            <span class="type-icon">🏪</span>
-            <div class="type-name">Comercio</div>
-        </div>
-
-        <div class="type-card"
-             onclick="setProjectType('industry',this)">
-            <span class="type-icon">🏭</span>
-            <div class="type-name">Industria</div>
-        </div>
-
-        <div class="type-card"
-             onclick="setProjectType('institution',this)">
-            <span class="type-icon">🏫</span>
-            <div class="type-name">Institución</div>
-        </div>
-
+        <div class="type-card active" onclick="setProjectType('home',this)"><span class="type-icon">🏠</span><div class="type-name">Vivienda</div></div>
+        <div class="type-card" onclick="setProjectType('building',this)"><span class="type-icon">🏢</span><div class="type-name">Edificio</div></div>
+        <div class="type-card" onclick="setProjectType('commerce',this)"><span class="type-icon">🏪</span><div class="type-name">Comercio</div></div>
+        <div class="type-card" onclick="setProjectType('industry',this)"><span class="type-icon">🏭</span><div class="type-name">Industria</div></div>
+        <div class="type-card" onclick="setProjectType('institution',this)"><span class="type-icon">🏫</span><div class="type-name">Institución</div></div>
     </div>
 </div>
-
 
 <!-- DASHBOARD -->
-
 <div class="dashboard">
-
-    <div class="dash-card">
-        <div class="dash-label">Equipos</div>
-        <div class="dash-value" id="dCount">0</div>
-    </div>
-
-    <div class="dash-card accent">
-        <div class="dash-label">Consumo Diario</div>
-        <div class="dash-value" id="dDaily">0 kWh</div>
-    </div>
-
-    <div class="dash-card warning">
-        <div class="dash-label">Costo Mensual</div>
-        <div class="dash-value" id="dCost">$0</div>
-        <div class="dash-sub" id="dTarifaSub">Tarifa: $850/kWh</div>
-    </div>
-
-    <div class="dash-card">
-        <div class="dash-label">Potencia Instalada</div>
-        <div class="dash-value" id="dInstalled">0 kW</div>
-        <div class="dash-sub" id="dDemand">Demanda estimada: 0 kW</div>
-    </div>
-
+    <div class="dash-card"><div class="dash-label">Equipos</div><div class="dash-value" id="dCount">0</div></div>
+    <div class="dash-card accent"><div class="dash-label">Consumo Diario</div><div class="dash-value" id="dDaily">0 kWh</div></div>
+    <div class="dash-card warning"><div class="dash-label">Costo Mensual</div><div class="dash-value" id="dCost">$0</div><div class="dash-sub" id="dTarifaSub">Tarifa: $850/kWh</div></div>
+    <div class="dash-card"><div class="dash-label">Potencia Instalada</div><div class="dash-value" id="dInstalled">0 kW</div><div class="dash-sub" id="dDemand">Demanda estimada: 0 kW</div></div>
 </div>
-
 
 <!-- CONFIGURACIÓN -->
-
 <div class="section">
-
     <div class="config-row">
-
         <div>
             <strong>💰 Tarifa eléctrica</strong><br>
-
-            <input
-                type="number"
-                id="configTarifa"
-                value="850"
-                min="0"
-                step="1"
-                style="width:110px;margin-top:5px;"
-                onchange="saveConfig();updateUI()">
-
-            <span style="font-size:.8rem;color:var(--light)">
-                COP/kWh
-            </span>
+            <input type="number" id="configTarifa" value="850" min="0" step="1" style="width:110px;margin-top:5px;" onchange="saveConfig();updateUI()">
+            <span style="font-size:.8rem;color:var(--light)">COP/kWh</span>
         </div>
-
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-
-            <button
-                class="btn btn-primary"
-                onclick="exportData()">
-                📤 Exportar
-            </button>
-
-            <button
-                class="btn btn-secondary"
-                onclick="document.getElementById('importFile').click()">
-                📥 Importar
-            </button>
-
-            <button
-                class="btn btn-danger"
-                onclick="clearInventory()">
-                🗑️ Limpiar
-            </button>
-
-            <input
-                type="file"
-                id="importFile"
-                accept=".json"
-                style="display:none"
-                onchange="importData(event)">
-
+            <button class="btn btn-primary" onclick="exportData()">📤 Exportar</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Importar</button>
+            <button class="btn btn-danger" onclick="clearInventory()">🗑️ Limpiar</button>
+            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
         </div>
-
     </div>
-
 </div>
-
 
 <!-- REGISTRAR EQUIPO -->
-
 <div class="section">
-
-    <div class="section-title">
-        ⚙️ Registrar Equipo
-    </div>
-
+    <div class="section-title">⚙️ Registrar Equipo</div>
     <form id="addForm" onsubmit="addEquipment(event)">
-
         <div class="form-grid">
-
             <div class="input-group">
-
                 <label>Nombre del Equipo</label>
-
-                <select id="eqName"
-                        onchange="handlePresetChange()">
-                    <option value="">
-                        -- Seleccionar sugerencia --
-                    </option>
-                </select>
-
-                <input
-                    type="text"
-                    id="eqNameCustom"
-                    placeholder="O escribe el nombre del equipo"
-                    style="margin-top:8px;">
-
+                <select id="eqName" onchange="handlePresetChange()"><option value="">-- Seleccionar sugerencia --</option></select>
+                <input type="text" id="eqNameCustom" placeholder="O escribe el nombre del equipo" style="margin-top:8px;">
             </div>
-
-
+            <div class="input-group"><label>Categoría</label><select id="eqCat"></select></div>
             <div class="input-group">
-
-                <label>Categoría</label>
-
-                <select id="eqCat"></select>
-
-            </div>
-
-
-            <div class="input-group">
-
                 <label>Método de Cálculo</label>
-
-                <select id="calcMethod"
-                        onchange="toggleCalcMethod()">
-
-                    <option value="power">
-                        ⚡ Por Potencia (W/kW/HP)
-                    </option>
-
-                    <option value="known">
-                        📊 Consumo mensual conocido
-                    </option>
-
+                <select id="calcMethod" onchange="toggleCalcMethod()">
+                    <option value="power">⚡ Por Potencia (W/kW/HP)</option>
+                    <option value="known">📊 Consumo mensual conocido</option>
                 </select>
-
             </div>
-
-
-            <!-- POTENCIA -->
-
-            <div
-                class="input-group"
-                id="powerInputGroup">
-
-                <label id="powerLabel">
-                    Potencia Nominal (W)
-                </label>
-
+            <div class="input-group" id="powerInputGroup">
+                <label id="powerLabel">Potencia Nominal (W)</label>
                 <div style="display:flex;gap:8px">
-
-                    <input
-                        type="number"
-                        id="eqPower"
-                        placeholder="Ej: 1500"
-                        min="0.01"
-                        step="any"
-                        required>
-
-                    <select
-                        id="powerUnit"
-                        style="width:90px"
-                        onchange="togglePowerFields()">
-
-                        <option value="W">W</option>
-                        <option value="kW">kW</option>
-                        <option value="HP">HP</option>
-
+                    <input type="number" id="eqPower" placeholder="Ej: 1500" min="0.01" step="any" required>
+                    <select id="powerUnit" style="width:90px" onchange="togglePowerFields()">
+                        <option value="W">W</option><option value="kW">kW</option><option value="HP">HP</option>
                     </select>
-
                 </div>
-
-                <div
-                    class="input-hint"
-                    id="powerHint">
-                    Verifique la placa del equipo
-                </div>
-
+                <div class="input-hint" id="powerHint">Verifique la placa del equipo</div>
             </div>
-
-
-            <!-- CONSUMO CONOCIDO -->
-
-            <div
-                class="input-group"
-                id="knownInputGroup"
-                style="display:none">
-
-                <label>
-                    Consumo Mensual (kWh/mes)
-                </label>
-
-                <input
-                    type="number"
-                    id="eqKnownKwh"
-                    placeholder="Ej: 35"
-                    min="0.01"
-                    step="0.1">
-
-                <div class="input-hint">
-                    Puede utilizar el valor de una factura o medición.
-                </div>
-
+            <div class="input-group" id="knownInputGroup" style="display:none">
+                <label>Consumo Mensual (kWh/mes)</label>
+                <input type="number" id="eqKnownKwh" placeholder="Ej: 35" min="0.01" step="0.1">
+                <div class="input-hint">Puede utilizar el valor de una factura o medición.</div>
             </div>
-
-
-            <div class="input-group">
-
-                <label>Horas de Uso / Día</label>
-
-                <input
-                    type="number"
-                    id="eqHours"
-                    placeholder="Ej: 8"
-                    min="0"
-                    max="24"
-                    step="0.1"
-                    required>
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>Días de Uso / Mes</label>
-
-                <input
-                    type="number"
-                    id="eqDays"
-                    value="30"
-                    min="1"
-                    max="31"
-                    required>
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>Cantidad</label>
-
-                <input
-                    type="number"
-                    id="eqQty"
-                    value="1"
-                    min="1"
-                    max="999"
-                    required>
-
-            </div>
-
+            <div class="input-group"><label>Horas de Uso / Día</label><input type="number" id="eqHours" placeholder="Ej: 8" min="0" max="24" step="0.1" required></div>
+            <div class="input-group"><label>Días de Uso / Mes</label><input type="number" id="eqDays" value="30" min="1" max="31" required></div>
+            <div class="input-group"><label>Cantidad</label><input type="number" id="eqQty" value="1" min="1" max="999" required></div>
         </div>
-
-
-        <!-- AVANZADO -->
-
-        <div
-            class="toggle-advanced"
-            id="advToggle"
-            onclick="toggleAdvanced()">
-
-            ⚙️ Mostrar datos eléctricos avanzados
-
-        </div>
-
-
-        <div
-            id="advancedFields"
-            class="advanced-fields">
-
+        <div class="toggle-advanced" id="advToggle" onclick="toggleAdvanced()">⚙️ Mostrar datos eléctricos avanzados</div>
+        <div id="advancedFields" class="advanced-fields">
             <div class="input-group">
-
                 <label>Voltaje</label>
-
-                <select
-                    id="eqVoltage"
-                    onchange="toggleCustomVoltage()">
-
-                    <option value="110">110 V</option>
-                    <option value="120">120 V</option>
-                    <option value="220" selected>220 V</option>
-                    <option value="380">380 V</option>
-                    <option value="440">440 V</option>
-                    <option value="custom">
-                        Personalizado
-                    </option>
-
+                <select id="eqVoltage" onchange="toggleCustomVoltage()">
+                    <option value="110">110 V</option><option value="120">120 V</option><option value="220" selected>220 V</option>
+                    <option value="380">380 V</option><option value="440">440 V</option><option value="custom">Personalizado</option>
                 </select>
-
-                <input
-                    type="number"
-                    id="eqVoltageCustom"
-                    placeholder="Ej: 240"
-                    min="1"
-                    step="any"
-                    style="display:none;margin-top:5px">
-
+                <input type="number" id="eqVoltageCustom" placeholder="Ej: 240" min="1" step="any" style="display:none;margin-top:5px">
             </div>
-
-
-            <div class="input-group">
-
-                <label>Fases</label>
-
-                <select id="eqPhases">
-
-                    <option value="1">
-                        Monofásico (1Φ)
-                    </option>
-
-                    <option value="3">
-                        Trifásico (3Φ)
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>Factor de Potencia</label>
-
-                <input
-                    type="number"
-                    id="eqPF"
-                    value="0.9"
-                    min="0.1"
-                    max="1"
-                    step="0.01">
-
-            </div>
-
-
-            <div class="input-group">
-
-                <label>Eficiencia del Motor (%)</label>
-
-                <input
-                    type="number"
-                    id="eqEff"
-                    value="85"
-                    min="50"
-                    max="100"
-                    step="1">
-
-            </div>
-
+            <div class="input-group"><label>Fases</label><select id="eqPhases"><option value="1">Monofásico (1Φ)</option><option value="3">Trifásico (3Φ)</option></select></div>
+            <div class="input-group"><label>Factor de Potencia</label><input type="number" id="eqPF" value="0.9" min="0.1" max="1" step="0.01"></div>
+            <div class="input-group"><label>Eficiencia del Motor (%)</label><input type="number" id="eqEff" value="85" min="50" max="100" step="1"></div>
         </div>
-
-
-        <button
-            type="submit"
-            class="btn btn-primary btn-full">
-
-            ➕ Agregar al Inventario
-
-        </button>
-
+        <button type="submit" class="btn btn-primary btn-full">➕ Agregar al Inventario</button>
     </form>
-
 </div>
-
 
 <!-- INVENTARIO -->
-
 <div class="section">
-
-    <div class="section-title">
-        📋 Inventario de Cargas
-    </div>
-
-    <div
-        id="equipList"
-        class="equip-list">
-    </div>
-
-    <div
-        id="emptyState"
-        class="empty">
-
+    <div class="section-title">📋 Inventario de Cargas</div>
+    <div id="equipList" class="equip-list"></div>
+    <div id="emptyState" class="empty">
         <div style="font-size:3rem">⚡</div>
-
-        <p>
-            No hay equipos registrados todavía.
-        </p>
-
-        <p style="font-size:.8rem">
-            Agrega un equipo para comenzar el análisis.
-        </p>
-
+        <p>No hay equipos registrados todavía.</p>
+        <p style="font-size:.8rem">Agrega un equipo para comenzar el análisis.</p>
     </div>
-
 </div>
-
 
 <!-- ANALISIS -->
-
 <div class="section">
-
-    <div class="section-title">
-        📊 Análisis Visual
-    </div>
-
+    <div class="section-title">📊 Análisis Visual</div>
     <div class="charts-grid">
-
-        <div>
-
-            <h4 style="margin-bottom:12px">
-                Consumo por Categoría
-            </h4>
-
-            <div
-                id="categoryChart"
-                class="chart-box">
-            </div>
-
-        </div>
-
-
-        <div>
-
-            <h4 style="margin-bottom:12px">
-                Top Consumidores
-            </h4>
-
-            <div
-                id="equipmentChart"
-                class="chart-box">
-            </div>
-
-        </div>
-
+        <div><h4 style="margin-bottom:12px">Consumo por Categoría</h4><div id="categoryChart" class="chart-box"></div></div>
+        <div><h4 style="margin-bottom:12px">Top Consumidores</h4><div id="equipmentChart" class="chart-box"></div></div>
     </div>
-
 </div>
 
-
-<!-- AHORRO ENERGÉTICO (NUEVO) -->
-
+<!-- AHORRO -->
 <div class="section saving-section">
-
-    <div class="section-title" style="color:#065f46; border-color:#a7f3d0;">
-        📉 Análisis de Ahorro Energético
-    </div>
-
+    <div class="section-title" style="color:#065f46;border-color:#a7f3d0;">📉 Análisis de Ahorro Energético</div>
     <div class="auto-save-controls">
         <div style="flex:1">
             <strong>🤖 Simulación Global</strong>
-            <p style="font-size:0.85rem; color:var(--text); margin-top:5px;">
-                Ajusta el slider para estimar cuánto ahorrarías reduciendo el consumo general (ej. apagar luces, optimizar climatización).
-            </p>
+            <p style="font-size:0.85rem;color:var(--text);margin-top:5px;">Ajusta el slider para estimar cuánto ahorrarías reduciendo el consumo general.</p>
         </div>
-        
         <div class="range-container">
-            <label style="font-size:0.9rem; font-weight:bold; white-space:nowrap;">Reducción Estimada:</label>
-            <input type="range" id="globalSaveSlider" min="0" max="50" value="0" 
-                   oninput="updateGlobalSave(this.value)">
-            <span id="globalSaveValue" style="font-weight:bold; color:var(--accent); width:50px; text-align:right;">0%</span>
+            <label style="font-size:0.9rem;font-weight:bold;white-space:nowrap;">Reducción:</label>
+            <input type="range" id="globalSaveSlider" min="0" max="50" value="0" oninput="updateGlobalSave(this.value)">
+            <span id="globalSaveValue" style="font-weight:bold;color:var(--accent);width:50px;text-align:right;">0%</span>
         </div>
     </div>
-
     <div class="savings-summary">
-        <div class="save-card">
-            <div class="label">Ahorro Mensual Est.</div>
-            <div class="value" id="totalSaveMoney">$0</div>
-        </div>
-        <div class="save-card">
-            <div class="label">Energía Ahorrada</div>
-            <div class="value" id="totalSaveKwh">0 kWh</div>
-        </div>
-        <div class="save-card">
-            <div class="label">Reducción CO2</div>
-            <div class="value" id="totalSaveCo2">0 kg</div>
-        </div>
-        <div class="save-card">
-            <div class="label">Ahorro Anual Est.</div>
-            <div class="value" id="totalSaveYear">$0</div>
-        </div>
+        <div class="save-card"><div class="label">Ahorro Mensual Est.</div><div class="value" id="totalSaveMoney">$0</div></div>
+        <div class="save-card"><div class="label">Energía Ahorrada</div><div class="value" id="totalSaveKwh">0 kWh</div></div>
+        <div class="save-card"><div class="label">Reducción CO2</div><div class="value" id="totalSaveCo2">0 kg</div></div>
+        <div class="save-card"><div class="label">Ahorro Anual Est.</div><div class="value" id="totalSaveYear">$0</div></div>
     </div>
-
-    <p style="font-size:0.8rem; color:var(--light); text-align:center; margin-top:10px;">
-        * El cálculo combina el % global con los % individuales configurados en cada equipo. Factor CO2 aprox: 0.4 kg/kWh.
-    </p>
-
+    <p style="font-size:0.8rem;color:var(--light);text-align:center;margin-top:10px;">* El cálculo combina el % global con los % individuales. Factor CO2 aprox: 0.4 kg/kWh.</p>
 </div>
-
 
 <!-- SOLAR -->
-
 <div class="section solar-section">
-
-    <div class="section-title">
-        ☀️ Estimación Solar
-    </div>
-
+    <div class="section-title">☀️ Estimación Solar</div>
     <div class="solar-auto">
-
-        <div style="font-size:.8rem">
-            CONSUMO DIARIO REAL REGISTRADO
-        </div>
-
-        <div
-            class="solar-auto-value"
-            id="solarAutoCons">
-            0.00 kWh
-        </div>
-
+        <div style="font-size:.8rem">CONSUMO DIARIO REAL REGISTRADO</div>
+        <div class="solar-auto-value" id="solarAutoCons">0.00 kWh</div>
     </div>
-
-
     <div class="form-grid">
-
-        <div class="input-group">
-
-            <label>
-                Potencia Panel (W)
-            </label>
-
-            <input
-                type="number"
-                id="solPanelW"
-                value="650"
-                min="1">
-
-        </div>
-
-
-        <div class="input-group">
-
-            <label>
-                Horas Sol Pico (HSP)
-            </label>
-
-            <input
-                type="number"
-                id="solHSP"
-                value="5"
-                min="0.1"
-                step="0.1">
-
-        </div>
-
-
-        <div class="input-group">
-
-            <label>
-                Eficiencia Sistema (%)
-            </label>
-
-            <input
-                type="number"
-                id="solEff"
-                value="80"
-                min="1"
-                max="100">
-
-        </div>
-
+        <div class="input-group"><label>Potencia Panel (W)</label><input type="number" id="solPanelW" value="650" min="1"></div>
+        <div class="input-group"><label>Horas Sol Pico (HSP)</label><input type="number" id="solHSP" value="5" min="0.1" step="0.1"></div>
+        <div class="input-group"><label>Eficiencia Sistema (%)</label><input type="number" id="solEff" value="80" min="1" max="100"></div>
     </div>
-
-
-    <button
-        onclick="calcSolar()"
-        class="btn btn-primary btn-full"
-        style="background:var(--solar)">
-
-        ☀️ Calcular Paneles
-
-    </button>
-
-
-    <div
-        id="solarRes"
-        class="solar-result">
-
+    <button onclick="calcSolar()" class="btn btn-primary btn-full" style="background:var(--solar)">☀️ Calcular Paneles</button>
+    <div id="solarRes" class="solar-result">
         <div class="solar-metrics">
-
-            <div class="s-metric">
-
-                <div class="lbl">
-                    PANELES NECESARIOS
-                </div>
-
-                <div
-                    class="val"
-                    id="solPanels">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="s-metric">
-
-                <div class="lbl">
-                    POTENCIA TOTAL
-                </div>
-
-                <div
-                    class="val"
-                    id="solTotal">
-                    0 W
-                </div>
-
-            </div>
-
-
-            <div class="s-metric">
-
-                <div class="lbl">
-                    PRODUCCIÓN/PANEL
-                </div>
-
-                <div
-                    class="val"
-                    id="solProd">
-                    0 kWh
-                </div>
-
-            </div>
-
+            <div class="s-metric"><div class="lbl">PANELES NECESARIOS</div><div class="val" id="solPanels">0</div></div>
+            <div class="s-metric"><div class="lbl">POTENCIA TOTAL</div><div class="val" id="solTotal">0 W</div></div>
+            <div class="s-metric"><div class="lbl">PRODUCCIÓN/PANEL</div><div class="val" id="solProd">0 kWh</div></div>
         </div>
-
-
-        <div
-            id="solNote"
-            style="
-            margin-top:15px;
-            background:#fef3c7;
-            padding:12px;
-            border-radius:8px;
-            font-size:.85rem;
-            color:#92400e;
-            ">
-
-        </div>
-
+        <div id="solNote" style="margin-top:15px;background:#fef3c7;padding:12px;border-radius:8px;font-size:.85rem;color:#92400e;"></div>
     </div>
-
 </div>
 
 </div>
-
 
 <!-- MODAL EDICIÓN -->
-
-<div
-    class="modal-overlay"
-    id="editModal">
-
+<div class="modal-overlay" id="editModal">
     <div class="modal">
-
-        <h3 style="margin-bottom:18px">
-            ✏️ Editar Equipo
-        </h3>
-
-        <form
-            id="editForm"
-            onsubmit="saveEdit(event)">
-
-            <input
-                type="hidden"
-                id="editId">
-
-
+        <h3 style="margin-bottom:18px">✏️ Editar Equipo</h3>
+        <form id="editForm" onsubmit="saveEdit(event)">
+            <input type="hidden" id="editId">
             <div class="form-grid">
-
+                <div class="input-group"><label>Nombre</label><input type="text" id="editName" required></div>
+                <div class="input-group"><label>Categoría</label><select id="editCat"></select></div>
                 <div class="input-group">
-
-                    <label>Nombre</label>
-
-                    <input
-                        type="text"
-                        id="editName"
-                        required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Categoría</label>
-
-                    <select id="editCat"></select>
-
-                </div>
-
-
-                <div class="input-group">
-
                     <label>Método</label>
-
-                    <select id="editMethod"
-                            onchange="toggleEditMethod()">
-
-                        <option value="power">
-                            Potencia
-                        </option>
-
-                        <option value="known">
-                            Consumo conocido
-                        </option>
-
+                    <select id="editMethod" onchange="toggleEditMethod()">
+                        <option value="power">Potencia</option>
+                        <option value="known">Consumo conocido</option>
                     </select>
-
                 </div>
-
-
-                <div
-                    class="input-group"
-                    id="editPowerGroup">
-
-                    <label>Potencia (W)</label>
-
-                    <input
-                        type="number"
-                        id="editPower"
-                        min="0.01"
-                        step="any">
-
-                </div>
-
-
-                <div
-                    class="input-group"
-                    id="editKnownGroup"
-                    style="display:none">
-
-                    <label>Consumo mensual (kWh)</label>
-
-                    <input
-                        type="number"
-                        id="editKnownKwh"
-                        min="0.01"
-                        step="0.1">
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Horas/Día</label>
-
-                    <input
-                        type="number"
-                        id="editHours"
-                        min="0"
-                        max="24"
-                        step="0.1"
-                        required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Días/Mes</label>
-
-                    <input
-                        type="number"
-                        id="editDays"
-                        min="1"
-                        max="31"
-                        required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Cantidad</label>
-
-                    <input
-                        type="number"
-                        id="editQty"
-                        min="1"
-                        required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Voltaje</label>
-
-                    <input
-                        type="number"
-                        id="editVoltage"
-                        min="1">
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Fases</label>
-
-                    <select id="editPhases">
-
-                        <option value="1">1Φ</option>
-                        <option value="3">3Φ</option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label>Factor Potencia</label>
-
-                    <input
-                        type="number"
-                        id="editPF"
-                        min="0.1"
-                        max="1"
-                        step="0.01">
-
-                </div>
-                
-                <!-- NUEVO CAMPO DE AHORRO INDIVIDUAL -->
-                <div class="input-group" style="grid-column: 1 / -1; border-top:1px dashed var(--border); padding-top:15px; margin-top:10px;">
-                    <label style="color:var(--accent)">📉 % Ahorro Individual Específico</label>
+                <div class="input-group" id="editPowerGroup"><label>Potencia (W)</label><input type="number" id="editPower" min="0.01" step="any"></div>
+                <div class="input-group" id="editKnownGroup" style="display:none"><label>Consumo mensual (kWh)</label><input type="number" id="editKnownKwh" min="0.01" step="0.1"></div>
+                <div class="input-group"><label>Horas/Día</label><input type="number" id="editHours" min="0" max="24" step="0.1" required></div>
+                <div class="input-group"><label>Días/Mes</label><input type="number" id="editDays" min="1" max="31" required></div>
+                <div class="input-group"><label>Cantidad</label><input type="number" id="editQty" min="1" required></div>
+                <div class="input-group"><label>Voltaje</label><input type="number" id="editVoltage" min="1"></div>
+                <div class="input-group"><label>Fases</label><select id="editPhases"><option value="1">1Φ</option><option value="3">3Φ</option></select></div>
+                <div class="input-group"><label>Factor Potencia</label><input type="number" id="editPF" min="0.1" max="1" step="0.01"></div>
+                <div class="input-group" style="grid-column:1/-1;border-top:1px dashed var(--border);padding-top:15px;margin-top:10px;">
+                    <label style="color:var(--accent)">📉 % Ahorro Individual</label>
                     <input type="number" id="editSavePct" min="0" max="100" step="1" placeholder="0">
-                    <div class="input-hint">Si este equipo tiene una medida concreta (ej. cambio a LED, motor eficiente), indíquelo aquí.</div>
+                    <div class="input-hint">Si este equipo tiene una medida concreta (ej. cambio a LED), indíquelo aquí.</div>
                 </div>
-
             </div>
-
-
-            <div
-                style="
-                display:flex;
-                justify-content:flex-end;
-                gap:8px;
-                margin-top:20px">
-
-                <button
-                    type="button"
-                    class="btn btn-danger"
-                    onclick="closeEditModal()">
-
-                    Cancelar
-
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary">
-
-                    💾 Guardar
-
-                </button>
-
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+                <button type="button" class="btn btn-danger" onclick="closeEditModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">💾 Guardar</button>
             </div>
-
         </form>
-
     </div>
-
 </div>
 
-
-<div
-    class="toast"
-    id="toast">
-</div>
-
+<div class="toast" id="toast"></div>
 
 <script>
+/* =====================================================
+   CONFIGURACIÓN: PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+===================================================== */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AQUI_TU_ID_DE_WEBAPP/exec";
 
 /* =====================================================
-   BASE DE DATOS DE SUGERENCIAS
+   BASE DE DATOS
 ===================================================== */
-
 const DB = {
-
-home:{
-    cats:[
-        "Climatización",
-        "Electrodomésticos",
-        "Iluminación",
-        "Entretenimiento",
-        "Cocina",
-        "Otros"
-    ],
-
-    presets:[
-        {n:"Nevera/Refrigerador",c:"Electrodomésticos",p:150,u:"W",h:24,d:30},
-        {n:"Aire Acondicionado Split",c:"Climatización",p:1200,u:"W",h:8,d:30},
-        {n:"Televisor LED 55\"",c:"Entretenimiento",p:120,u:"W",h:5,d:30},
-        {n:"Lavadora",c:"Electrodomésticos",p:500,u:"W",h:1,d:12},
-        {n:"Bombillo LED",c:"Iluminación",p:10,u:"W",h:6,d:30},
-        {n:"Computador",c:"Otros",p:300,u:"W",h:8,d:22},
-        {n:"Router WiFi",c:"Otros",p:12,u:"W",h:24,d:30},
-        {n:"Bomba de Agua",c:"Otros",p:1,u:"HP",h:2,d:20}
-    ]
-},
-
-building:{
-    cats:[
-        "HVAC Central",
-        "Iluminación General",
-        "Ascensores",
-        "Bombas Agua",
-        "Oficinas",
-        "Zonas Comunes",
-        "Otros"
-    ],
-
-    presets:[
-        {n:"Chiller / HVAC Central",c:"HVAC Central",p:50,u:"kW",h:10,d:30},
-        {n:"Ascensor Principal",c:"Ascensores",p:15,u:"kW",h:8,d:30},
-        {n:"Bomba Hidroneumática",c:"Bombas Agua",p:2,u:"HP",h:4,d:30},
-        {n:"Iluminación Pasillos",c:"Iluminación General",p:500,u:"W",h:12,d:30},
-        {n:"Motor de Ascensor",c:"Ascensores",p:20,u:"HP",h:5,d:30}
-    ]
-},
-
-commerce:{
-    cats:[
-        "Refrigeración Comercial",
-        "Cocina",
-        "Iluminación",
-        "Climatización",
-        "Punto de Venta",
-        "Otros"
-    ],
-
-    presets:[
-        {n:"Vitrina Refrigerada",c:"Refrigeración Comercial",p:400,u:"W",h:24,d:30},
-        {n:"Congelador Horizontal",c:"Refrigeración Comercial",p:300,u:"W",h:24,d:30},
-        {n:"Estufa Industrial",c:"Cocina",p:3000,u:"W",h:6,d:26},
-        {n:"Aire Acondicionado Cassette",c:"Climatización",p:2400,u:"W",h:10,d:26},
-        {n:"POS / Caja Registradora",c:"Punto de Venta",p:150,u:"W",h:10,d:26}
-    ]
-},
-
-industry:{
-    cats:[
-        "Motores Eléctricos",
-        "Compresores",
-        "Soldadura",
-        "Refrigeración Industrial",
-        "Iluminación Nave",
-        "Maquinaria",
-        "Bombas",
-        "Otros"
-    ],
-
-    presets:[
-        {n:"Motor Trifásico 5 HP",c:"Motores Eléctricos",p:5,u:"HP",h:8,d:22,v:220,ph:3,pf:.85,eff:90},
-        {n:"Motor Trifásico 10 HP",c:"Motores Eléctricos",p:10,u:"HP",h:8,d:22,v:220,ph:3,pf:.88,eff:90},
-        {n:"Motor Trifásico 20 HP",c:"Motores Eléctricos",p:20,u:"HP",h:8,d:22,v:220,ph:3,pf:.9,eff:92},
-        {n:"Compresor Tornillo",c:"Compresores",p:20,u:"HP",h:8,d:22,v:220,ph:3,pf:.85,eff:90},
-        {n:"Soldadora MIG",c:"Soldadura",p:8000,u:"W",h:4,d:22,v:220,ph:1,pf:.7},
-        {n:"Extractor Industrial",c:"Maquinaria",p:1500,u:"W",h:8,d:22,v:220,ph:1,pf:.8},
-        {n:"Bomba Industrial 10 HP",c:"Bombas",p:10,u:"HP",h:6,d:22,v:220,ph:3,pf:.85,eff:90}
-    ]
-},
-
-institution:{
-    cats:[
-        "Aulas",
-        "Laboratorios",
-        "Administración",
-        "Cocina Escolar",
-        "Iluminación",
-        "Servidores",
-        "Otros"
-    ],
-
-    presets:[
-        {n:"Proyector Aula",c:"Aulas",p:300,u:"W",h:6,d:20},
-        {n:"Servidor Rack",c:"Servidores",p:500,u:"W",h:24,d:30},
-        {n:"Aire Acondicionado Aula",c:"Aulas",p:1200,u:"W",h:6,d:20},
-        {n:"Equipo Laboratorio",c:"Laboratorios",p:1000,u:"W",h:4,d:20}
-    ]
-}
-
+    home:{cats:["Climatización","Electrodomésticos","Iluminación","Entretenimiento","Cocina","Otros"],presets:[{n:"Nevera/Refrigerador",c:"Electrodomésticos",p:150,u:"W",h:24,d:30},{n:"Aire Acondicionado Split",c:"Climatización",p:1200,u:"W",h:8,d:30},{n:"Televisor LED 55\"",c:"Entretenimiento",p:120,u:"W",h:5,d:30},{n:"Lavadora",c:"Electrodomésticos",p:500,u:"W",h:1,d:12},{n:"Bombillo LED",c:"Iluminación",p:10,u:"W",h:6,d:30},{n:"Computador",c:"Otros",p:300,u:"W",h:8,d:22},{n:"Router WiFi",c:"Otros",p:12,u:"W",h:24,d:30},{n:"Bomba de Agua",c:"Otros",p:1,u:"HP",h:2,d:20}]},
+    building:{cats:["HVAC Central","Iluminación General","Ascensores","Bombas Agua","Oficinas","Zonas Comunes","Otros"],presets:[{n:"Chiller / HVAC Central",c:"HVAC Central",p:50,u:"kW",h:10,d:30},{n:"Ascensor Principal",c:"Ascensores",p:15,u:"kW",h:8,d:30},{n:"Bomba Hidroneumática",c:"Bombas Agua",p:2,u:"HP",h:4,d:30},{n:"Iluminación Pasillos",c:"Iluminación General",p:500,u:"W",h:12,d:30},{n:"Motor de Ascensor",c:"Ascensores",p:20,u:"HP",h:5,d:30}]},
+    commerce:{cats:["Refrigeración Comercial","Cocina","Iluminación","Climatización","Punto de Venta","Otros"],presets:[{n:"Vitrina Refrigerada",c:"Refrigeración Comercial",p:400,u:"W",h:24,d:30},{n:"Congelador Horizontal",c:"Refrigeración Comercial",p:300,u:"W",h:24,d:30},{n:"Estufa Industrial",c:"Cocina",p:3000,u:"W",h:6,d:26},{n:"Aire Acondicionado Cassette",c:"Climatización",p:2400,u:"W",h:10,d:26},{n:"POS / Caja Registradora",c:"Punto de Venta",p:150,u:"W",h:10,d:26}]},
+    industry:{cats:["Motores Eléctricos","Compresores","Soldadura","Refrigeración Industrial","Iluminación Nave","Maquinaria","Bombas","Otros"],presets:[{n:"Motor Trifásico 5 HP",c:"Motores Eléctricos",p:5,u:"HP",h:8,d:22,v:220,ph:3,pf:.85,eff:90},{n:"Motor Trifásico 10 HP",c:"Motores Eléctricos",p:10,u:"HP",h:8,d:22,v:220,ph:3,pf:.88,eff:90},{n:"Motor Trifásico 20 HP",c:"Motores Eléctricos",p:20,u:"HP",h:8,d:22,v:220,ph:3,pf:.9,eff:92},{n:"Compresor Tornillo",c:"Compresores",p:20,u:"HP",h:8,d:22,v:220,ph:3,pf:.85,eff:90},{n:"Soldadora MIG",c:"Soldadura",p:8000,u:"W",h:4,d:22,v:220,ph:1,pf:.7},{n:"Extractor Industrial",c:"Maquinaria",p:1500,u:"W",h:8,d:22,v:220,ph:1,pf:.8},{n:"Bomba Industrial 10 HP",c:"Bombas",p:10,u:"HP",h:6,d:22,v:220,ph:3,pf:.85,eff:90}]},
+    institution:{cats:["Aulas","Laboratorios","Administración","Cocina Escolar","Iluminación","Servidores","Otros"],presets:[{n:"Proyector Aula",c:"Aulas",p:300,u:"W",h:6,d:20},{n:"Servidor Rack",c:"Servidores",p:500,u:"W",h:24,d:30},{n:"Aire Acondicionado Aula",c:"Aulas",p:1200,u:"W",h:6,d:20},{n:"Equipo Laboratorio",c:"Laboratorios",p:1000,u:"W",h:4,d:20}]}
 };
 
-
-/* =====================================================
-   ESTADO
-===================================================== */
-
-let state={
-    projectType:"home",
-    inventory:[],
-    config:{
-        tarifa:850,
-        globalSavingsPct: 0 // Nuevo campo para ahorro global
-    },
-    showAdvanced:false
-};
-
-
-/* =====================================================
-   INICIO
-===================================================== */
+let state={projectType:"home",inventory:[],config:{tarifa:850,globalSavingsPct:0},clientData:{},showAdvanced:false};
 
 document.addEventListener("DOMContentLoaded",function(){
-
-    loadData();
-    initProjectType();
-    updateUI();
-
+    loadData();initProjectType();updateUI();loadClientData();
+    if(!document.getElementById("auditDate").value) document.getElementById("auditDate").value = new Date().toISOString().split('T')[0];
 });
 
+/* =====================================================
+   DATOS DEL CLIENTE
+===================================================== */
+function saveClientData(){
+    state.clientData = {
+        name: document.getElementById("clientName").value, nit: document.getElementById("clientNit").value,
+        address: document.getElementById("clientAddress").value, phone: document.getElementById("clientPhone").value,
+        email: document.getElementById("clientEmail").value, auditor: document.getElementById("auditorName").value,
+        date: document.getElementById("auditDate").value, reportNumber: document.getElementById("reportNumber").value,
+        notes: document.getElementById("auditNotes").value
+    };
+    try{ localStorage.setItem("energypro_client", JSON.stringify(state.clientData)); }catch(e){}
+}
+
+function loadClientData(){
+    try{
+        const saved = localStorage.getItem("energypro_client");
+        if(saved){
+            state.clientData = JSON.parse(saved);
+            document.getElementById("clientName").value = state.clientData.name || "";
+            document.getElementById("clientNit").value = state.clientData.nit || "";
+            document.getElementById("clientAddress").value = state.clientData.address || "";
+            document.getElementById("clientPhone").value = state.clientData.phone || "";
+            document.getElementById("clientEmail").value = state.clientData.email || "";
+            document.getElementById("auditorName").value = state.clientData.auditor || "";
+            document.getElementById("auditDate").value = state.clientData.date || "";
+            document.getElementById("reportNumber").value = state.clientData.reportNumber || "";
+            document.getElementById("auditNotes").value = state.clientData.notes || "";
+        }
+    }catch(e){}
+}
 
 /* =====================================================
    GUARDAR / CARGAR
 ===================================================== */
-
-function saveData(){
-
-    try{
-
-        localStorage.setItem(
-            "energypro_v5",
-            JSON.stringify(state)
-        );
-
-    }catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
-
+function saveData(){ try{ localStorage.setItem("energypro_v5", JSON.stringify(state)); }catch(error){console.error(error);} }
 function loadData(){
-
     try{
-
-        const saved=
-            localStorage.getItem("energypro_v5");
-
+        const saved = localStorage.getItem("energypro_v5");
         if(saved){
-
-            const parsed=JSON.parse(saved);
-
-            state={
-                ...state,
-                ...parsed,
-                config:{
-                    ...state.config,
-                    ...(parsed.config||{})
-                }
-            };
-
+            const parsed = JSON.parse(saved);
+            state = {...state, ...parsed, config:{...state.config, ...(parsed.config||{})}};
         }
-
-        document.getElementById("configTarifa").value=
-            state.config.tarifa;
-            
-        // Cargar slider de ahorro
+        document.getElementById("configTarifa").value = state.config.tarifa;
         const slider = document.getElementById("globalSaveSlider");
-        if(slider) {
-            slider.value = state.config.globalSavingsPct || 0;
-            document.getElementById("globalSaveValue").textContent = (state.config.globalSavingsPct || 0) + "%";
-        }
-
-        if(state.showAdvanced){
-
-            toggleAdvanced(true);
-
-        }
-
-    }catch(error){
-
-        console.error("Error cargando datos",error);
-
-    }
-
+        if(slider){ slider.value = state.config.globalSavingsPct || 0; document.getElementById("globalSaveValue").textContent = (state.config.globalSavingsPct || 0) + "%"; }
+        if(state.showAdvanced) toggleAdvanced(true);
+    }catch(error){console.error("Error cargando datos",error);}
 }
-
 
 /* =====================================================
    TIPO DE INSTALACIÓN
 ===================================================== */
-
 function setProjectType(type,card){
-
-    state.projectType=type;
-
-    document
-        .querySelectorAll(".type-card")
-        .forEach(c=>c.classList.remove("active"));
-
+    state.projectType = type;
+    document.querySelectorAll(".type-card").forEach(c=>c.classList.remove("active"));
     card.classList.add("active");
-
-    populateCategories();
-    populatePresets();
-
-    saveData();
-
-    showToast(
-        "🏗️ Sugerencias actualizadas para "+
-        getTypeName(type),
-        "success"
-    );
-
+    populateCategories(); populatePresets(); saveData();
+    showToast("🏗️ Sugerencias actualizadas para "+getTypeName(type),"success");
 }
-
-
-function getTypeName(type){
-
-    const names={
-        home:"Vivienda",
-        building:"Edificio",
-        commerce:"Comercio",
-        industry:"Industria",
-        institution:"Institución"
-    };
-
-    return names[type]||type;
-
-}
-
-
+function getTypeName(type){ const names={home:"Vivienda",building:"Edificio",commerce:"Comercio",industry:"Industria",institution:"Institución"}; return names[type]||type; }
 function initProjectType(){
-
-    const types=[
-        "home",
-        "building",
-        "commerce",
-        "industry",
-        "institution"
-    ];
-
-    const cards=
-        document.querySelectorAll(".type-card");
-
-    cards.forEach(c=>
-        c.classList.remove("active")
-    );
-
-    const index=
-        types.indexOf(state.projectType);
-
-    if(index>=0 && cards[index]){
-
-        cards[index].classList.add("active");
-
-    }
-
-    populateCategories();
-    populatePresets();
-
+    const types=["home","building","commerce","industry","institution"];
+    const cards=document.querySelectorAll(".type-card");
+    cards.forEach(c=>c.classList.remove("active"));
+    const index=types.indexOf(state.projectType);
+    if(index>=0 && cards[index]) cards[index].classList.add("active");
+    populateCategories(); populatePresets();
 }
-
-
-/* =====================================================
-   CATEGORÍAS Y PRESETS
-===================================================== */
-
 function populateCategories(){
-
-    const cats=
-        [...DB[state.projectType].cats];
-
+    const cats=[...DB[state.projectType].cats];
     ["eqCat","editCat"].forEach(id=>{
-
-        const select=
-            document.getElementById(id);
-
-        if(!select)return;
-
-        select.innerHTML=
-            cats.map(cat=>
-                `<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`
-            ).join("");
-
+        const select=document.getElementById(id);
+        if(!select) return;
+        select.innerHTML=cats.map(cat=>`<option value="${escapeHTML(cat)}">${escapeHTML(cat)}</option>`).join("");
     });
-
 }
-
-
 function populatePresets(){
-
-    const presets=
-        DB[state.projectType].presets;
-
-    const select=
-        document.getElementById("eqName");
-
-    select.innerHTML=
-        `<option value="">-- Seleccionar sugerencia --</option>`;
-
-    presets.forEach((p,index)=>{
-
-        select.innerHTML+=
-            `<option value="${index}">
-                ${escapeHTML(p.n)}
-                (${p.p} ${p.u})
-            </option>`;
-
-    });
-
+    const presets=DB[state.projectType].presets;
+    const select=document.getElementById("eqName");
+    select.innerHTML=`<option value="">-- Seleccionar sugerencia --</option>`;
+    presets.forEach((p,index)=>{ select.innerHTML+=`<option value="${index}">${escapeHTML(p.n)} (${p.p} ${p.u})</option>`; });
 }
-
-
-/* =====================================================
-   PRESET
-===================================================== */
-
 function handlePresetChange(){
-
-    const value=
-        document.getElementById("eqName").value;
-
-    const custom=
-        document.getElementById("eqNameCustom");
-
-    if(value===""){
-
-        custom.style.display="block";
-        custom.focus();
-        return;
-
-    }
-
-    const preset=
-        DB[state.projectType].presets[
-            parseInt(value)
-        ];
-
-    if(!preset)return;
-
-    custom.style.display="none";
-    custom.value="";
-
-    document.getElementById("eqCat").value=
-        preset.c;
-
-    document.getElementById("powerUnit").value=
-        preset.u;
-
-    document.getElementById("eqPower").value=
-        preset.p;
-
-    document.getElementById("eqHours").value=
-        preset.h;
-
-    document.getElementById("eqDays").value=
-        preset.d;
-
+    const value=document.getElementById("eqName").value;
+    const custom=document.getElementById("eqNameCustom");
+    if(value===""){custom.style.display="block";custom.focus();return;}
+    const preset=DB[state.projectType].presets[parseInt(value)];
+    if(!preset) return;
+    custom.style.display="none";custom.value="";
+    document.getElementById("eqCat").value=preset.c;
+    document.getElementById("powerUnit").value=preset.u;
+    document.getElementById("eqPower").value=preset.p;
+    document.getElementById("eqHours").value=preset.h;
+    document.getElementById("eqDays").value=preset.d;
     togglePowerFields();
-
     if(preset.v){
-
-        document.getElementById("eqVoltage").value=
-            String(preset.v);
-
-        document.getElementById("eqPhases").value=
-            String(preset.ph||1);
-
-        document.getElementById("eqPF").value=
-            preset.pf||.9;
-
-        document.getElementById("eqEff").value=
-            preset.eff||85;
-
+        document.getElementById("eqVoltage").value=String(preset.v);
+        document.getElementById("eqPhases").value=String(preset.ph||1);
+        document.getElementById("eqPF").value=preset.pf||.9;
+        document.getElementById("eqEff").value=preset.eff||85;
         toggleCustomVoltage();
-
     }
-
 }
-
-
-/* =====================================================
-   AVANZADO
-===================================================== */
-
 function toggleAdvanced(force){
-
-    state.showAdvanced=
-        force!==undefined
-        ? force
-        : !state.showAdvanced;
-
-    const toggle=
-        document.getElementById("advToggle");
-
-    const fields=
-        document.getElementById("advancedFields");
-
-    if(state.showAdvanced){
-
-        toggle.classList.add("active");
-
-        toggle.textContent=
-            "⚙️ Ocultar datos eléctricos avanzados";
-
-        fields.classList.add("show");
-
-    }else{
-
-        toggle.classList.remove("active");
-
-        toggle.textContent=
-            "⚙️ Mostrar datos eléctricos avanzados";
-
-        fields.classList.remove("show");
-
-    }
-
+    state.showAdvanced = force!==undefined ? force : !state.showAdvanced;
+    const toggle=document.getElementById("advToggle");
+    const fields=document.getElementById("advancedFields");
+    if(state.showAdvanced){ toggle.classList.add("active"); toggle.textContent="⚙️ Ocultar datos eléctricos avanzados"; fields.classList.add("show"); }
+    else{ toggle.classList.remove("active"); toggle.textContent="⚙️ Mostrar datos eléctricos avanzados"; fields.classList.remove("show"); }
     saveData();
-
 }
-
-
 function toggleCustomVoltage(){
-
-    const select=
-        document.getElementById("eqVoltage");
-
-    const custom=
-        document.getElementById("eqVoltageCustom");
-
-    if(select.value==="custom"){
-
-        custom.style.display="block";
-        custom.required=true;
-
-    }else{
-
-        custom.style.display="none";
-        custom.required=false;
-        custom.value="";
-
-    }
-
+    const select=document.getElementById("eqVoltage");
+    const custom=document.getElementById("eqVoltageCustom");
+    if(select.value==="custom"){custom.style.display="block";custom.required=true;}
+    else{custom.style.display="none";custom.required=false;custom.value="";}
 }
-
-
-/* =====================================================
-   MÉTODO DE CÁLCULO
-===================================================== */
-
 function toggleCalcMethod(){
-
-    const method=
-        document.getElementById("calcMethod").value;
-
-    const power=
-        document.getElementById("powerInputGroup");
-
-    const known=
-        document.getElementById("knownInputGroup");
-
-    const powerInput=
-        document.getElementById("eqPower");
-
-    const knownInput=
-        document.getElementById("eqKnownKwh");
-
-    if(method==="known"){
-
-        power.style.display="none";
-        known.style.display="block";
-
-        powerInput.required=false;
-        knownInput.required=true;
-
-    }else{
-
-        power.style.display="block";
-        known.style.display="none";
-
-        powerInput.required=true;
-        knownInput.required=false;
-
-    }
-
+    const method=document.getElementById("calcMethod").value;
+    const power=document.getElementById("powerInputGroup");
+    const known=document.getElementById("knownInputGroup");
+    const powerInput=document.getElementById("eqPower");
+    const knownInput=document.getElementById("eqKnownKwh");
+    if(method==="known"){ power.style.display="none";known.style.display="block";powerInput.required=false;knownInput.required=true; }
+    else{ power.style.display="block";known.style.display="none";powerInput.required=true;knownInput.required=false; }
 }
-
-
 function togglePowerFields(){
-
-    const unit=
-        document.getElementById("powerUnit").value;
-
-    const label=
-        document.getElementById("powerLabel");
-
-    const hint=
-        document.getElementById("powerHint");
-
-    if(unit==="HP"){
-
-        label.textContent=
-            "Potencia Mecánica (HP)";
-
-        hint.textContent=
-            "Se convertirá a potencia eléctrica usando la eficiencia.";
-
-    }else if(unit==="kW"){
-
-        label.textContent=
-            "Potencia (kW)";
-
-        hint.textContent=
-            "1 kW = 1000 W";
-
-    }else{
-
-        label.textContent=
-            "Potencia Nominal (W)";
-
-        hint.textContent=
-            "Verifique la placa del equipo.";
-
-    }
-
+    const unit=document.getElementById("powerUnit").value;
+    const label=document.getElementById("powerLabel");
+    const hint=document.getElementById("powerHint");
+    if(unit==="HP"){label.textContent="Potencia Mecánica (HP)";hint.textContent="Se convertirá a potencia eléctrica usando la eficiencia.";}
+    else if(unit==="kW"){label.textContent="Potencia (kW)";hint.textContent="1 kW = 1000 W";}
+    else{label.textContent="Potencia Nominal (W)";hint.textContent="Verifique la placa del equipo.";}
 }
-
-
-/* =====================================================
-   CÁLCULOS
-===================================================== */
-
 function getPowerInWatts(power,unit,efficiency){
-
-    if(unit==="HP"){
-
-        const eff=
-            (efficiency||85)/100;
-
-        return(power*746)/eff;
-
-    }
-
-    if(unit==="kW"){
-
-        return power*1000;
-
-    }
-
+    if(unit==="HP"){const eff=(efficiency||85)/100;return(power*746)/eff;}
+    if(unit==="kW") return power*1000;
     return power;
-
 }
-
-
 function calculateCurrent(powerW,voltage,phases,pf){
-
-    if(
-        !Number.isFinite(powerW) ||
-        !Number.isFinite(voltage) ||
-        !Number.isFinite(pf) ||
-        voltage<=0 ||
-        pf<=0
-    ){
-
-        return 0;
-
-    }
-
-    if(phases==3){
-
-        return powerW/
-            (
-                Math.sqrt(3)*
-                voltage*
-                pf
-            );
-
-    }
-
+    if(!Number.isFinite(powerW)||!Number.isFinite(voltage)||!Number.isFinite(pf)||voltage<=0||pf<=0) return 0;
+    if(phases==3) return powerW/(Math.sqrt(3)*voltage*pf);
     return powerW/(voltage*pf);
-
 }
-
-
-/* =====================================================
-   AGREGAR EQUIPO
-===================================================== */
-
 function addEquipment(event){
-
     event.preventDefault();
-
-    const nameSelect=
-        document.getElementById("eqName").value;
-
-    const nameCustom=
-        document
-        .getElementById("eqNameCustom")
-        .value
-        .trim();
-
+    const nameSelect=document.getElementById("eqName").value;
+    const nameCustom=document.getElementById("eqNameCustom").value.trim();
     let name="";
-
-    if(nameCustom){
-
-        name=nameCustom;
-
-    }else if(nameSelect){
-
-        const preset=
-            DB[state.projectType].presets[
-                parseInt(nameSelect)
-            ];
-
-        if(preset){
-
-            name=preset.n;
-
-        }
-
-    }
-
-    if(!name){
-
-        showToast(
-            "⚠️ Escribe o selecciona un nombre",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const cat=
-        document.getElementById("eqCat").value;
-
-    const method=
-        document.getElementById("calcMethod").value;
-
-    const hours=
-        parseFloat(
-            document.getElementById("eqHours").value
-        );
-
-    const days=
-        parseInt(
-            document.getElementById("eqDays").value
-        );
-
-    const qty=
-        parseInt(
-            document.getElementById("eqQty").value
-        );
-
-
-    if(!cat){
-
-        showToast(
-            "⚠️ Selecciona una categoría",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(
-        !Number.isFinite(hours) ||
-        hours<0 ||
-        hours>24
-    ){
-
-        showToast(
-            "⚠️ Ingresa horas entre 0 y 24",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(
-        !Number.isFinite(days) ||
-        days<1 ||
-        days>31
-    ){
-
-        showToast(
-            "⚠️ Ingresa días válidos",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(
-        !Number.isFinite(qty) ||
-        qty<1
-    ){
-
-        showToast(
-            "⚠️ Ingresa una cantidad válida",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /* DATOS ELÉCTRICOS */
-
-    let voltage=220;
-    let phases=1;
-    let pf=.9;
-    let eff=85;
-
-
+    if(nameCustom) name=nameCustom;
+    else if(nameSelect){const preset=DB[state.projectType].presets[parseInt(nameSelect)];if(preset) name=preset.n;}
+    if(!name){showToast("⚠️ Escribe o selecciona un nombre","error");return;}
+    const cat=document.getElementById("eqCat").value;
+    const method=document.getElementById("calcMethod").value;
+    const hours=parseFloat(document.getElementById("eqHours").value);
+    const days=parseInt(document.getElementById("eqDays").value);
+    const qty=parseInt(document.getElementById("eqQty").value);
+    if(!cat){showToast("⚠️ Selecciona una categoría","error");return;}
+    if(!Number.isFinite(hours)||hours<0||hours>24){showToast("⚠️ Ingresa horas entre 0 y 24","error");return;}
+    if(!Number.isFinite(days)||days<1||days>31){showToast("⚠️ Ingresa días válidos","error");return;}
+    if(!Number.isFinite(qty)||qty<1){showToast("⚠️ Ingresa una cantidad válida","error");return;}
+    let voltage=220,phases=1,pf=.9,eff=85;
     if(state.showAdvanced){
-
-        const selectedVoltage=
-            document.getElementById("eqVoltage").value;
-
-        if(selectedVoltage==="custom"){
-
-            voltage=
-                parseFloat(
-                    document.getElementById(
-                        "eqVoltageCustom"
-                    ).value
-                );
-
-        }else{
-
-            voltage=
-                parseFloat(selectedVoltage);
-
-        }
-
-        phases=
-            parseInt(
-                document.getElementById("eqPhases").value
-            );
-
-        pf=
-            parseFloat(
-                document.getElementById("eqPF").value
-            );
-
-        eff=
-            parseFloat(
-                document.getElementById("eqEff").value
-            );
-
+        const selectedVoltage=document.getElementById("eqVoltage").value;
+        if(selectedVoltage==="custom") voltage=parseFloat(document.getElementById("eqVoltageCustom").value);
+        else voltage=parseFloat(selectedVoltage);
+        phases=parseInt(document.getElementById("eqPhases").value);
+        pf=parseFloat(document.getElementById("eqPF").value);
+        eff=parseFloat(document.getElementById("eqEff").value);
     }
-
-
-    if(
-        !Number.isFinite(voltage) ||
-        voltage<=0
-    ){
-
-        showToast(
-            "⚠️ Voltaje inválido",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if(
-        !Number.isFinite(pf) ||
-        pf<=0 ||
-        pf>1
-    ){
-
-        showToast(
-            "⚠️ Factor de potencia inválido",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    let powerW=0;
-    let dailyKwh=0;
-    let monthlyKwh=0;
-    let current=0;
-    let knownKwh=null;
-
-
-    /* CONSUMO CONOCIDO */
-
+    if(!Number.isFinite(voltage)||voltage<=0){showToast("⚠️ Voltaje inválido","error");return;}
+    if(!Number.isFinite(pf)||pf<=0||pf>1){showToast("⚠️ Factor de potencia inválido","error");return;}
+    let powerW=0,dailyKwh=0,monthlyKwh=0,current=0,knownKwh=null;
     if(method==="known"){
-
-        knownKwh=
-            parseFloat(
-                document.getElementById(
-                    "eqKnownKwh"
-                ).value
-            );
-
-        if(
-            !Number.isFinite(knownKwh) ||
-            knownKwh<=0
-        ){
-
-            showToast(
-                "⚠️ Consumo mensual inválido",
-                "error"
-            );
-
-            return;
-
-        }
-
-        monthlyKwh=knownKwh;
-        dailyKwh=
-            knownKwh/days;
-
-        /* Potencia equivalente durante las horas de uso */
-
-        if(hours>0){
-
-            powerW=
-                (dailyKwh*1000)/hours;
-
-        }else{
-
-            powerW=0;
-
-        }
-
-        current=
-            calculateCurrent(
-                powerW,
-                voltage,
-                phases,
-                pf
-            );
-
-    }
-
-
-    /* POTENCIA */
-
-    else{
-
-        const rawPower=
-            parseFloat(
-                document.getElementById(
-                    "eqPower"
-                ).value
-            );
-
-        const unit=
-            document.getElementById(
-                "powerUnit"
-            ).value;
-
-        if(
-            !Number.isFinite(rawPower) ||
-            rawPower<=0
-        ){
-
-            showToast(
-                "⚠️ Potencia inválida",
-                "error"
-            );
-
-            return;
-
-        }
-
-        powerW=
-            getPowerInWatts(
-                rawPower,
-                unit,
-                eff
-            );
-
-        dailyKwh=
-            (powerW*hours)/1000;
-
-        monthlyKwh=
-            dailyKwh*days;
-
-        current=
-            calculateCurrent(
-                powerW,
-                voltage,
-                phases,
-                pf
-            );
-
-    }
-
-
-    const equipment={
-
-        id:
-            Date.now()+
-            Math.floor(Math.random()*1000),
-
-        name:name,
-
-        cat:cat,
-
-        method:method,
-
-        powerRaw:
-            method==="known"
-            ? null
-            : parseFloat(
-                document.getElementById(
-                    "eqPower"
-                ).value
-            ),
-
-        unit:
-            method==="known"
-            ? "kWh/mes"
-            : document.getElementById(
-                "powerUnit"
-            ).value,
-
-        powerW:powerW,
-
-        knownKwh:knownKwh,
-
-        hours:hours,
-
-        days:days,
-
-        qty:qty,
-
-        voltage:voltage,
-
-        phases:phases,
-
-        pf:pf,
-
-        eff:eff,
-
-        current:current,
-
-        dailyKwh:dailyKwh,
-
-        monthlyKwh:monthlyKwh,
-        
-        individualSavePct: 0, // Nuevo campo para ahorro individual
-
-        isAdvanced:state.showAdvanced
-
-    };
-
-
-    state.inventory.push(equipment);
-
-    saveData();
-
-    updateUI();
-
-
-    /* REINICIAR FORMULARIO */
-
-    document.getElementById("eqName").value="";
-    document.getElementById("eqNameCustom").value="";
-    document.getElementById("eqNameCustom").style.display="block";
-
-    document.getElementById("eqPower").value="";
-    document.getElementById("eqKnownKwh").value="";
-    document.getElementById("eqHours").value="";
-    document.getElementById("eqQty").value="1";
-
-    document.getElementById("calcMethod").value="power";
-
-    toggleCalcMethod();
-
-
-    showToast(
-        "✅ "+name+" agregado correctamente",
-        "success"
-    );
-
-}
-
-
-/* =====================================================
-   DASHBOARD
-===================================================== */
-
-function getDailyTotal(){
-
-    return state.inventory.reduce(
-        (total,e)=>
-            total+
-            (
-                (Number(e.dailyKwh)||0)*
-                (Number(e.qty)||1)
-            ),
-        0
-    );
-
-}
-
-
-function getMonthlyTotal(){
-
-    return state.inventory.reduce(
-        (total,e)=>
-            total+
-            (
-                (Number(e.monthlyKwh)||0)*
-                (Number(e.qty)||1)
-            ),
-        0
-    );
-
-}
-
-
-function getInstalledPower(){
-
-    return state.inventory.reduce(
-        (total,e)=>
-            total+
-            (
-                (Number(e.powerW)||0)*
-                (Number(e.qty)||1)
-            ),
-        0
-    );
-
-}
-
-
-function calculateDemand(){
-
-    /*
-      Estimación sencilla.
-      Se puede reemplazar posteriormente
-      por un cálculo de simultaneidad real.
-    */
-
-    if(state.inventory.length===0){
-
-        return 0;
-
-    }
-
-    let total=0;
-
-    state.inventory.forEach(e=>{
-
-        const category=
-            (e.cat||"").toLowerCase();
-
-        let factor=.75;
-
-        if(
-            state.projectType==="industry"
-        ){
-
-            factor=.65;
-
-        }
-
-        if(
-            category.includes("ilumin")
-        ){
-
-            factor=.9;
-
-        }
-
-        if(
-            category.includes("motor") ||
-            category.includes("compresor") ||
-            category.includes("bomba")
-        ){
-
-            factor=.7;
-
-        }
-
-        total+=
-            (Number(e.powerW)||0)*
-            (Number(e.qty)||1)*
-            factor;
-
-    });
-
-    return total;
-
-}
-
-
-function updateDashboard(){
-
-    const daily=
-        getDailyTotal();
-
-    const monthly=
-        getMonthlyTotal();
-
-    const installed=
-        getInstalledPower();
-
-    const tariff=
-        parseFloat(
-            document.getElementById(
-                "configTarifa"
-            ).value
-        )||850;
-
-    state.config.tarifa=tariff;
-
-    const demand=
-        calculateDemand();
-
-    document.getElementById(
-        "dCount"
-    ).textContent=
-        state.inventory.length;
-
-    document.getElementById(
-        "dDaily"
-    ).textContent=
-        daily.toFixed(2)+" kWh";
-
-    document.getElementById(
-        "dCost"
-    ).textContent=
-        "$"+
-        Math.round(
-            monthly*tariff
-        ).toLocaleString("es-CO");
-
-    document.getElementById(
-        "dTarifaSub"
-    ).textContent=
-        "Tarifa: $"+
-        tariff.toLocaleString("es-CO")+
-        "/kWh";
-
-    document.getElementById(
-        "dInstalled"
-    ).textContent=
-        (installed/1000).toFixed(2)+
-        " kW";
-
-    document.getElementById(
-        "dDemand"
-    ).textContent=
-        "Demanda estimada: "+
-        (demand/1000).toFixed(2)+
-        " kW";
-
-    document.getElementById(
-        "solarAutoCons"
-    ).textContent=
-        daily.toFixed(2)+" kWh";
-
-    saveData();
-
-}
-
-
-/* =====================================================
-   CÁLCULO DE AHORRO (NUEVO)
-===================================================== */
-
-function updateGlobalSave(val) {
-    state.config.globalSavingsPct = parseInt(val);
-    document.getElementById("globalSaveValue").textContent = val + "%";
-    saveData();
-    updateSavingsAnalysis();
-}
-
-function calculateTotalSavings() {
-    const tariff = state.config.tarifa || 850;
-    const globalPct = (state.config.globalSavingsPct || 0) / 100;
-    
-    let totalSavedKwh = 0;
-    let totalSavedMoney = 0;
-
-    state.inventory.forEach(eq => {
-        const baseMonthly = (Number(eq.monthlyKwh) || 0) * (Number(eq.qty) || 1);
-        
-        // Ahorro individual específico del equipo
-        const indivPct = (Number(eq.individualSavePct) || 0) / 100;
-        
-        // Combinamos ahorros: Primero aplicamos el individual, luego el global sobre el resto
-        // O simplemente sumamos porcentajes si son medidas distintas. 
-        // Para simplificar: Ahorro Total = Base * (PctGlobal + PctIndividual)
-        // Limitamos a 90% máximo para no tener valores negativos
-        
-        let effectivePct = globalPct + indivPct;
-        if(effectivePct > 0.9) effectivePct = 0.9;
-        
-        const savedKwh = baseMonthly * effectivePct;
-        const savedMoney = savedKwh * tariff;
-        
-        totalSavedKwh += savedKwh;
-        totalSavedMoney += savedMoney;
-    });
-    
-    return {
-        kwh: totalSavedKwh,
-        money: totalSavedMoney,
-        co2: totalSavedKwh * 0.4 // Factor promedio
-    };
-}
-
-function updateSavingsAnalysis() {
-    const data = calculateTotalSavings();
-    
-    document.getElementById("totalSaveMoney").textContent = 
-        "$" + Math.round(data.money).toLocaleString("es-CO");
-        
-    document.getElementById("totalSaveKwh").textContent = 
-        data.kwh.toFixed(1) + " kWh";
-        
-    document.getElementById("totalSaveCo2").textContent = 
-        data.co2.toFixed(1) + " kg";
-        
-    document.getElementById("totalSaveYear").textContent = 
-        "$" + Math.round(data.money * 12).toLocaleString("es-CO");
-}
-
-
-/* =====================================================
-   INVENTARIO
-===================================================== */
-
-function renderInventory(){
-
-    const list=
-        document.getElementById(
-            "equipList"
-        );
-
-    const empty=
-        document.getElementById(
-            "emptyState"
-        );
-
-    list.innerHTML="";
-
-    if(
-        state.inventory.length===0
-    ){
-
-        empty.style.display="block";
-        return;
-
-    }
-
-    empty.style.display="none";
-
-
-    state.inventory.forEach(eq=>{
-
-        const card=
-            document.createElement("div");
-
-        card.className="equip-card";
-
-
-        const mode=
-            eq.method==="known"
-            ?
-            `<span style="
-                font-size:.68rem;
-                background:#fef3c7;
-                padding:3px 7px;
-                border-radius:8px;
-                color:#92400e;
-                margin-left:5px">
-                📊 Consumo conocido
-            </span>`
-            :
-            "";
-            
-        // Indicador visual de ahorro configurado
-        const saveBadge = (eq.individualSavePct > 0) 
-            ? `<span style="font-size:.7rem; background:#d1fae5; color:#065f46; padding:2px 6px; border-radius:6px; margin-left:5px;">📉 -${eq.individualSavePct}%</span>` 
-            : "";
-
-
-        let electrical="";
-
-        if(eq.isAdvanced || eq.current>0){
-
-            electrical=`
-
-                <div class="elec-details">
-
-                    <div class="elec-row">
-                        <span>Voltaje</span>
-                        <strong>
-                            ${formatNumber(eq.voltage)} V
-                        </strong>
-                    </div>
-
-                    <div class="elec-row">
-                        <span>Fases</span>
-                        <strong>
-                            ${eq.phases}Φ
-                        </strong>
-                    </div>
-
-                    <div class="elec-row">
-                        <span>Factor de Potencia</span>
-                        <strong>
-                            ${formatNumber(eq.pf)}
-                        </strong>
-                    </div>
-
-                    <div class="elec-row">
-                        <span>Corriente estimada</span>
-                        <strong>
-                            ${formatNumber(eq.current,1)} A
-                        </strong>
-                    </div>
-
-                    <div class="elec-row">
-                        <span>Potencia eléctrica</span>
-                        <strong>
-                            ${formatNumber(eq.powerW,0)} W
-                        </strong>
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        const powerDisplay=
-            eq.method==="known"
-            ?
-            `
-            <div class="spec-item">
-                <strong>Consumo mensual</strong>
-                <span class="spec-val">
-                    ${formatNumber(eq.monthlyKwh,1)} kWh
-                </span>
-            </div>
-            `
-            :
-            `
-            <div class="spec-item">
-                <strong>Potencia</strong>
-                <span class="spec-val">
-                    ${formatNumber(eq.powerW,0)} W
-                </span>
-            </div>
-            `;
-
-
-        card.innerHTML=`
-
-            <div class="equip-header">
-
-                <div class="equip-name">
-                    ${escapeHTML(eq.name)}
-                    ${mode}
-                    ${saveBadge}
-                </div>
-
-                <span class="equip-badge">
-                    ${escapeHTML(eq.cat)}
-                </span>
-
-            </div>
-
-            ${electrical}
-
-            <div class="equip-specs">
-
-                ${powerDisplay}
-
-                <div class="spec-item">
-                    <strong>Uso</strong>
-                    <span class="spec-val">
-                        ${formatNumber(eq.hours,1)} h ×
-                        ${eq.days} d
-                    </span>
-                </div>
-
-                <div class="spec-item">
-                    <strong>Cantidad</strong>
-                    <span class="spec-val">
-                        ${eq.qty} und
-                    </span>
-                </div>
-
-                <div class="spec-item">
-                    <strong>Diario</strong>
-                    <span class="spec-val highlight">
-                        ${formatNumber(
-                            eq.dailyKwh*eq.qty,
-                            2
-                        )} kWh
-                    </span>
-                </div>
-
-                <div class="spec-item">
-                    <strong>Mensual</strong>
-                    <span class="spec-val">
-                        ${formatNumber(
-                            eq.monthlyKwh*eq.qty,
-                            1
-                        )} kWh
-                    </span>
-                </div>
-
-            </div>
-
-            <div class="equip-actions">
-
-                <button
-                    class="btn btn-edit"
-                    onclick="openEdit(${eq.id})">
-                    ✏️ Editar
-                </button>
-
-                <button
-                    class="btn btn-danger"
-                    onclick="deleteEquip(${eq.id})">
-                    🗑️
-                </button>
-
-            </div>
-
-        `;
-
-        list.appendChild(card);
-
-    });
-
-}
-
-
-/* =====================================================
-   GRÁFICOS SIN CHART.JS
-===================================================== */
-
-function updateCharts(){
-
-    renderCategoryChart();
-    renderEquipmentChart();
-
-}
-
-
-function renderCategoryChart(){
-
-    const container=
-        document.getElementById(
-            "categoryChart"
-        );
-
-    container.innerHTML="";
-
-    const categories={};
-
-    state.inventory.forEach(e=>{
-
-        categories[e.cat]=
-            (
-                categories[e.cat]||0
-            )+
-            (
-                (Number(e.monthlyKwh)||0)*
-                (Number(e.qty)||1)
-            );
-
-    });
-
-
-    const values=
-        Object.values(categories);
-
-    if(values.length===0){
-
-        container.innerHTML=
-            `<div class="empty">
-                📊 Sin datos todavía
-            </div>`;
-
-        return;
-
-    }
-
-
-    const max=
-        Math.max(...values);
-
-    const colors=[
-        "#2563eb",
-        "#10b981",
-        "#f59e0b",
-        "#ef4444",
-        "#8b5cf6",
-        "#ec4899",
-        "#64748b",
-        "#14b8a6"
-    ];
-
-
-    Object.entries(categories)
-        .forEach(([cat,value],index)=>{
-
-            const percent=
-                max>0
-                ?(value/max)*100
-                :0;
-
-            const item=
-                document.createElement("div");
-
-            item.className="cat-item";
-
-            item.innerHTML=`
-
-                <div
-                    class="cat-dot"
-                    style="
-                    background:${colors[index%colors.length]}">
-                </div>
-
-                <div class="cat-info">
-
-                    <div class="cat-name">
-                        ${escapeHTML(cat)}
-                    </div>
-
-                    <div class="cat-value">
-                        ${formatNumber(value,1)}
-                        kWh/mes
-                    </div>
-
-                    <div class="bar-bg"
-                         style="margin-top:4px">
-
-                        <div
-                            class="bar-fill"
-                            style="
-                            width:${percent}%;
-                            background:${colors[index%colors.length]}">
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
-
-            container.appendChild(item);
-
-        });
-
-}
-
-
-function renderEquipmentChart(){
-
-    const container=
-        document.getElementById(
-            "equipmentChart"
-        );
-
-    container.innerHTML="";
-
-
-    const sorted=
-        [...state.inventory]
-        .sort(
-            (a,b)=>
-                (b.dailyKwh*b.qty)-
-                (a.dailyKwh*a.qty)
-        )
-        .slice(0,8);
-
-
-    if(sorted.length===0){
-
-        container.innerHTML=
-            `<div class="empty">
-                📊 Sin datos todavía
-            </div>`;
-
-        return;
-
-    }
-
-
-    const max=
-        Math.max(
-            ...sorted.map(
-                e=>e.dailyKwh*e.qty
-            )
-        );
-
-
-    sorted.forEach(eq=>{
-
-        const value=
-            eq.dailyKwh*eq.qty;
-
-        const percent=
-            max>0
-            ?(value/max)*100
-            :0;
-
-        const item=
-            document.createElement("div");
-
-        item.className="bar-item";
-
-        item.innerHTML=`
-
-            <div class="bar-label">
-
-                <span>
-                    ${escapeHTML(eq.name)}
-                </span>
-
-                <strong>
-                    ${formatNumber(value,2)}
-                    kWh/día
-                </strong>
-
-            </div>
-
-            <div class="bar-bg">
-
-                <div
-                    class="bar-fill"
-                    style="width:${percent}%">
-                </div>
-
-            </div>
-
-        `;
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-/* =====================================================
-   EDITAR
-===================================================== */
-
-function openEdit(id){
-
-    const eq=
-        state.inventory.find(
-            x=>x.id===id
-        );
-
-    if(!eq)return;
-
-
-    document.getElementById(
-        "editId"
-    ).value=eq.id;
-
-    document.getElementById(
-        "editName"
-    ).value=eq.name;
-
-    document.getElementById(
-        "editCat"
-    ).value=eq.cat;
-
-    document.getElementById(
-        "editMethod"
-    ).value=
-        eq.method||"power";
-
-    document.getElementById(
-        "editPower"
-    ).value=
-        eq.powerW||"";
-
-    document.getElementById(
-        "editKnownKwh"
-    ).value=
-        eq.knownKwh||eq.monthlyKwh||"";
-
-    document.getElementById(
-        "editHours"
-    ).value=eq.hours;
-
-    document.getElementById(
-        "editDays"
-    ).value=eq.days;
-
-    document.getElementById(
-        "editQty"
-    ).value=eq.qty;
-
-    document.getElementById(
-        "editVoltage"
-    ).value=eq.voltage||220;
-
-    document.getElementById(
-        "editPhases"
-    ).value=eq.phases||1;
-
-    document.getElementById(
-        "editPF"
-    ).value=eq.pf||.9;
-    
-    // Cargar ahorro individual
-    document.getElementById(
-        "editSavePct"
-    ).value = eq.individualSavePct || 0;
-
-
-    toggleEditMethod();
-
-    document.getElementById(
-        "editModal"
-    ).classList.add("active");
-
-}
-
-
-function toggleEditMethod(){
-
-    const method=
-        document.getElementById(
-            "editMethod"
-        ).value;
-
-    document.getElementById(
-        "editPowerGroup"
-    ).style.display=
-        method==="power"
-        ?"block"
-        :"none";
-
-    document.getElementById(
-        "editKnownGroup"
-    ).style.display=
-        method==="known"
-        ?"block"
-        :"none";
-
-}
-
-
-function closeEditModal(){
-
-    document.getElementById(
-        "editModal"
-    ).classList.remove("active");
-
-}
-
-
-function saveEdit(event){
-
-    event.preventDefault();
-
-    const id=
-        parseInt(
-            document.getElementById(
-                "editId"
-            ).value
-        );
-
-    const eq=
-        state.inventory.find(
-            x=>x.id===id
-        );
-
-    if(!eq)return;
-
-
-    eq.name=
-        document.getElementById(
-            "editName"
-        ).value.trim();
-
-    eq.cat=
-        document.getElementById(
-            "editCat"
-        ).value;
-
-    eq.method=
-        document.getElementById(
-            "editMethod"
-        ).value;
-
-    eq.hours=
-        parseFloat(
-            document.getElementById(
-                "editHours"
-            ).value
-        );
-
-    eq.days=
-        parseInt(
-            document.getElementById(
-                "editDays"
-            ).value
-        );
-
-    eq.qty=
-        parseInt(
-            document.getElementById(
-                "editQty"
-            ).value
-        );
-
-    eq.voltage=
-        parseFloat(
-            document.getElementById(
-                "editVoltage"
-            ).value
-        )||220;
-
-    eq.phases=
-        parseInt(
-            document.getElementById(
-                "editPhases"
-            ).value
-        );
-
-    eq.pf=
-        parseFloat(
-            document.getElementById(
-                "editPF"
-            ).value
-        )||.9;
-        
-    // Guardar ahorro individual
-    eq.individualSavePct = 
-        parseFloat(document.getElementById("editSavePct").value) || 0;
-
-
-    if(eq.method==="known"){
-
-        const known=
-            parseFloat(
-                document.getElementById(
-                    "editKnownKwh"
-                ).value
-            );
-
-        if(
-            !Number.isFinite(known) ||
-            known<=0
-        ){
-
-            showToast(
-                "⚠️ Consumo inválido",
-                "error"
-            );
-
-            return;
-
-        }
-
-        eq.knownKwh=known;
-
-        eq.monthlyKwh=known;
-
-        eq.dailyKwh=
-            known/eq.days;
-
-        eq.powerW=
-            eq.hours>0
-            ?(eq.dailyKwh*1000)/eq.hours
-            :0;
-
+        knownKwh=parseFloat(document.getElementById("eqKnownKwh").value);
+        if(!Number.isFinite(knownKwh)||knownKwh<=0){showToast("⚠️ Consumo mensual inválido","error");return;}
+        monthlyKwh=knownKwh;dailyKwh=knownKwh/days;
+        if(hours>0) powerW=(dailyKwh*1000)/hours;
+        current=calculateCurrent(powerW,voltage,phases,pf);
     }else{
-
-        const power=
-            parseFloat(
-                document.getElementById(
-                    "editPower"
-                ).value
-            );
-
-        if(
-            !Number.isFinite(power) ||
-            power<=0
-        ){
-
-            showToast(
-                "⚠️ Potencia inválida",
-                "error"
-            );
-
-            return;
-
-        }
-
-        eq.powerW=power;
-
-        eq.knownKwh=null;
-
-        eq.dailyKwh=
-            (power*eq.hours)/1000;
-
-        eq.monthlyKwh=
-            eq.dailyKwh*eq.days;
-
+        const rawPower=parseFloat(document.getElementById("eqPower").value);
+        const unit=document.getElementById("powerUnit").value;
+        if(!Number.isFinite(rawPower)||rawPower<=0){showToast("⚠️ Potencia inválida","error");return;}
+        powerW=getPowerInWatts(rawPower,unit,eff);
+        dailyKwh=(powerW*hours)/1000;monthlyKwh=dailyKwh*days;
+        current=calculateCurrent(powerW,voltage,phases,pf);
     }
-
-
-    eq.current=
-        calculateCurrent(
-            eq.powerW,
-            eq.voltage,
-            eq.phases,
-            eq.pf
-        );
-
-
-    saveData();
-
-    closeEditModal();
-
-    updateUI();
-
-    showToast(
-        "✅ Equipo actualizado",
-        "success"
-    );
-
-}
-
-
-/* =====================================================
-   ELIMINAR
-===================================================== */
-
-function deleteEquip(id){
-
-    const eq=
-        state.inventory.find(
-            x=>x.id===id
-        );
-
-    if(!eq)return;
-
-
-    if(
-        !confirm(
-            "¿Eliminar "+eq.name+"?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    state.inventory=
-        state.inventory.filter(
-            x=>x.id!==id
-        );
-
-    saveData();
-
-    updateUI();
-
-    showToast(
-        "🗑️ Equipo eliminado",
-        "success"
-    );
-
-}
-
-
-function clearInventory(){
-
-    if(
-        state.inventory.length===0
-    ){
-
-        showToast(
-            "ℹ️ El inventario ya está vacío"
-        );
-
-        return;
-
-    }
-
-
-    if(
-        !confirm(
-            "¿Seguro que quieres eliminar TODOS los equipos?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    state.inventory=[];
-
-    saveData();
-
-    updateUI();
-
-    showToast(
-        "🗑️ Inventario limpiado",
-        "success"
-    );
-
-}
-
-
-/* =====================================================
-   SOLAR
-===================================================== */
-
-function calcSolar(){
-
-    const daily=
-        getDailyTotal();
-
-    if(daily<=0){
-
-        showToast(
-            "⚠️ Agrega equipos primero",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const panelW=
-        parseFloat(
-            document.getElementById(
-                "solPanelW"
-            ).value
-        );
-
-    const hsp=
-        parseFloat(
-            document.getElementById(
-                "solHSP"
-            ).value
-        );
-
-    const efficiency=
-        parseFloat(
-            document.getElementById(
-                "solEff"
-            ).value
-        )/100;
-
-
-    if(
-        !Number.isFinite(panelW) ||
-        panelW<=0 ||
-        !Number.isFinite(hsp) ||
-        hsp<=0 ||
-        !Number.isFinite(efficiency) ||
-        efficiency<=0
-    ){
-
-        showToast(
-            "⚠️ Datos solares inválidos",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const production=
-        (
-            panelW*
-            hsp*
-            efficiency
-        )/1000;
-
-
-    const panels=
-        Math.ceil(
-            daily/production
-        );
-
-
-    document.getElementById(
-        "solarRes"
-    ).style.display="block";
-
-
-    document.getElementById(
-        "solPanels"
-    ).textContent=panels;
-
-
-    document.getElementById(
-        "solTotal"
-    ).textContent=
-        (
-            panels*panelW
-        ).toLocaleString("es-CO")+
-        " W";
-
-
-    document.getElementById(
-        "solProd"
-    ).textContent=
-        production.toFixed(2)+
-        " kWh";
-
-
-    let note=
-        "Para cubrir aproximadamente "+
-        daily.toFixed(2)+
-        " kWh/día con paneles de "+
-        panelW+
-        " W, "+
-        hsp+
-        " HSP y "+
-        (efficiency*100)+
-        "% de eficiencia.";
-
-
-    if(hsp<3.5){
-
-        note+=
-            " ⚠️ Las HSP son bajas; revise el recurso solar del lugar.";
-
-    }else if(hsp>6){
-
-        note+=
-            " ☀️ Se está usando una HSP alta; confirme el valor con datos locales.";
-
-    }
-
-
-    document.getElementById(
-        "solNote"
-    ).textContent=note;
-
-}
-
-
-/* =====================================================
-   EXPORTAR
-===================================================== */
-
-function exportData(){
-
-    const data=
-        JSON.stringify(
-            state,
-            null,
-            2
-        );
-
-    const blob=
-        new Blob(
-            [data],
-            {type:"application/json"}
-        );
-
-    const url=
-        URL.createObjectURL(blob);
-
-    const link=
-        document.createElement("a");
-
-    link.href=url;
-
-    link.download=
-        "energypro_"+
-        state.projectType+
-        "_"+
-        new Date()
-        .toISOString()
-        .slice(0,10)+
-        ".json";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    link.remove();
-
-    URL.revokeObjectURL(url);
-
-    showToast(
-        "📤 Datos exportados correctamente",
-        "success"
-    );
-
-}
-
-
-/* =====================================================
-   IMPORTAR
-===================================================== */
-
-function importData(event){
-
-    const file=
-        event.target.files[0];
-
-    if(!file)return;
-
-
-    const reader=
-        new FileReader();
-
-
-    reader.onload=function(e){
-
-        try{
-
-            const data=
-                JSON.parse(
-                    e.target.result
-                );
-
-
-            if(
-                !data ||
-                !Array.isArray(
-                    data.inventory
-                )
-            ){
-
-                throw new Error(
-                    "Formato inválido"
-                );
-
-            }
-
-
-            state={
-                ...state,
-                ...data,
-                config:{
-                    ...state.config,
-                    ...(data.config||{})
-                }
-            };
-
-
-            document.getElementById(
-                "configTarifa"
-            ).value=
-                state.config.tarifa;
-                
-            // Actualizar slider
-            const slider = document.getElementById("globalSaveSlider");
-            if(slider) {
-                slider.value = state.config.globalSavingsPct || 0;
-                document.getElementById("globalSaveValue").textContent = (state.config.globalSavingsPct || 0) + "%";
-            }
-
-
-            initProjectType();
-
-            updateUI();
-
-            saveData();
-
-
-            showToast(
-                "📥 "+
-                state.inventory.length+
-                " equipos importados",
-                "success"
-            );
-
-
-        }catch(error){
-
-            console.error(error);
-
-            showToast(
-                "❌ Archivo JSON inválido",
-                "error"
-            );
-
-        }
-
+    const equipment={
+        id:Date.now()+Math.floor(Math.random()*1000), name:name, cat:cat, method:method,
+        powerRaw:method==="known"?null:parseFloat(document.getElementById("eqPower").value),
+        unit:method==="known"?"kWh/mes":document.getElementById("powerUnit").value,
+        powerW:powerW, knownKwh:knownKwh, hours:hours, days:days, qty:qty,
+        voltage:voltage, phases:phases, pf:pf, eff:eff, current:current,
+        dailyKwh:dailyKwh, monthlyKwh:monthlyKwh, individualSavePct:0, isAdvanced:state.showAdvanced
     };
-
-
-    reader.readAsText(file);
-
-    event.target.value="";
-
+    state.inventory.push(equipment); saveData(); updateUI();
+    document.getElementById("eqName").value=""; document.getElementById("eqNameCustom").value="";
+    document.getElementById("eqNameCustom").style.display="block";
+    document.getElementById("eqPower").value=""; document.getElementById("eqKnownKwh").value="";
+    document.getElementById("eqHours").value=""; document.getElementById("eqQty").value="1";
+    document.getElementById("calcMethod").value="power"; toggleCalcMethod();
+    showToast("✅ "+name+" agregado correctamente","success");
 }
-
-
-/* =====================================================
-   CONFIGURACIÓN
-===================================================== */
-
-function saveConfig(){
-
-    const tariff=
-        parseFloat(
-            document.getElementById(
-                "configTarifa"
-            ).value
-        );
-
-    state.config.tarifa=
-        Number.isFinite(tariff)
-        ?tariff
-        :850;
-
+function getDailyTotal(){ return state.inventory.reduce((total,e)=>total+((Number(e.dailyKwh)||0)*(Number(e.qty)||1)),0); }
+function getMonthlyTotal(){ return state.inventory.reduce((total,e)=>total+((Number(e.monthlyKwh)||0)*(Number(e.qty)||1)),0); }
+function getInstalledPower(){ return state.inventory.reduce((total,e)=>total+((Number(e.powerW)||0)*(Number(e.qty)||1)),0); }
+function calculateDemand(){
+    if(state.inventory.length===0) return 0;
+    let total=0;
+    state.inventory.forEach(e=>{
+        const category=(e.cat||"").toLowerCase();
+        let factor=.75;
+        if(state.projectType==="industry") factor=.65;
+        if(category.includes("ilumin")) factor=.9;
+        if(category.includes("motor")||category.includes("compresor")||category.includes("bomba")) factor=.7;
+        total+=(Number(e.powerW)||0)*(Number(e.qty)||1)*factor;
+    });
+    return total;
+}
+function updateDashboard(){
+    const daily=getDailyTotal(); const monthly=getMonthlyTotal(); const installed=getInstalledPower();
+    const tariff=parseFloat(document.getElementById("configTarifa").value)||850;
+    state.config.tarifa=tariff; const demand=calculateDemand();
+    document.getElementById("dCount").textContent=state.inventory.length;
+    document.getElementById("dDaily").textContent=daily.toFixed(2)+" kWh";
+    document.getElementById("dCost").textContent="$"+Math.round(monthly*tariff).toLocaleString("es-CO");
+    document.getElementById("dTarifaSub").textContent="Tarifa: $"+tariff.toLocaleString("es-CO")+"/kWh";
+    document.getElementById("dInstalled").textContent=(installed/1000).toFixed(2)+" kW";
+    document.getElementById("dDemand").textContent="Demanda estimada: "+(demand/1000).toFixed(2)+" kW";
+    document.getElementById("solarAutoCons").textContent=daily.toFixed(2)+" kWh";
     saveData();
-
 }
-
-
-/* =====================================================
-   UPDATE GENERAL
-===================================================== */
-
-function updateUI(){
-
-    renderInventory();
-
-    updateDashboard();
-
-    updateCharts();
-    
-    updateSavingsAnalysis(); // Actualizar sección de ahorro
-
+function updateGlobalSave(val){
+    state.config.globalSavingsPct=parseInt(val);
+    document.getElementById("globalSaveValue").textContent=val+"%";
+    saveData(); updateSavingsAnalysis();
 }
-
-
-/* =====================================================
-   UTILIDADES
-===================================================== */
-
+function calculateTotalSavings(){
+    const tariff=state.config.tarifa||850; const globalPct=(state.config.globalSavingsPct||0)/100;
+    let totalSavedKwh=0,totalSavedMoney=0;
+    state.inventory.forEach(eq=>{
+        const baseMonthly=(Number(eq.monthlyKwh)||0)*(Number(eq.qty)||1);
+        const indivPct=(Number(eq.individualSavePct)||0)/100;
+        let effectivePct=globalPct+indivPct; if(effectivePct>0.9) effectivePct=0.9;
+        const savedKwh=baseMonthly*effectivePct;
+        totalSavedKwh+=savedKwh; totalSavedMoney+=savedKwh*tariff;
+    });
+    return {kwh:totalSavedKwh,money:totalSavedMoney,co2:totalSavedKwh*0.4};
+}
+function updateSavingsAnalysis(){
+    const data=calculateTotalSavings();
+    document.getElementById("totalSaveMoney").textContent="$"+Math.round(data.money).toLocaleString("es-CO");
+    document.getElementById("totalSaveKwh").textContent=data.kwh.toFixed(1)+" kWh";
+    document.getElementById("totalSaveCo2").textContent=data.co2.toFixed(1)+" kg";
+    document.getElementById("totalSaveYear").textContent="$"+Math.round(data.money*12).toLocaleString("es-CO");
+}
+function renderInventory(){
+    const list=document.getElementById("equipList"); const empty=document.getElementById("emptyState");
+    list.innerHTML="";
+    if(state.inventory.length===0){empty.style.display="block";return;}
+    empty.style.display="none";
+    state.inventory.forEach(eq=>{
+        const card=document.createElement("div"); card.className="equip-card";
+        const mode=eq.method==="known"?`<span style="font-size:.68rem;background:#fef3c7;padding:3px 7px;border-radius:8px;color:#92400e;margin-left:5px">📊 Consumo conocido</span>`:"";
+        const saveBadge=(eq.individualSavePct>0)?`<span style="font-size:.7rem;background:#d1fae5;color:#065f46;padding:2px 6px;border-radius:6px;margin-left:5px;">📉 -${eq.individualSavePct}%</span>`:"";
+        let electrical="";
+        if(eq.isAdvanced||eq.current>0){
+            electrical=`<div class="elec-details">
+                <div class="elec-row"><span>Voltaje</span><strong>${formatNumber(eq.voltage)} V</strong></div>
+                <div class="elec-row"><span>Fases</span><strong>${eq.phases}Φ</strong></div>
+                <div class="elec-row"><span>Factor de Potencia</span><strong>${formatNumber(eq.pf)}</strong></div>
+                <div class="elec-row"><span>Corriente estimada</span><strong>${formatNumber(eq.current,1)} A</strong></div>
+                <div class="elec-row"><span>Potencia eléctrica</span><strong>${formatNumber(eq.powerW,0)} W</strong></div>
+            </div>`;
+        }
+        const powerDisplay=eq.method==="known"?
+            `<div class="spec-item"><strong>Consumo mensual</strong><span class="spec-val">${formatNumber(eq.monthlyKwh,1)} kWh</span></div>`:
+            `<div class="spec-item"><strong>Potencia</strong><span class="spec-val">${formatNumber(eq.powerW,0)} W</span></div>`;
+        card.innerHTML=`
+            <div class="equip-header">
+                <div class="equip-name">${escapeHTML(eq.name)} ${mode} ${saveBadge}</div>
+                <span class="equip-badge">${escapeHTML(eq.cat)}</span>
+            </div>
+            ${electrical}
+            <div class="equip-specs">
+                ${powerDisplay}
+                <div class="spec-item"><strong>Uso</strong><span class="spec-val">${formatNumber(eq.hours,1)} h × ${eq.days} d</span></div>
+                <div class="spec-item"><strong>Cantidad</strong><span class="spec-val">${eq.qty} und</span></div>
+                <div class="spec-item"><strong>Diario</strong><span class="spec-val highlight">${formatNumber(eq.dailyKwh*eq.qty,2)} kWh</span></div>
+                <div class="spec-item"><strong>Mensual</strong><span class="spec-val">${formatNumber(eq.monthlyKwh*eq.qty,1)} kWh</span></div>
+            </div>
+            <div class="equip-actions">
+                <button class="btn btn-edit" onclick="openEdit(${eq.id})">✏️ Editar</button>
+                <button class="btn btn-danger" onclick="deleteEquip(${eq.id})">🗑️</button>
+            </div>`;
+        list.appendChild(card);
+    });
+}
+function updateCharts(){renderCategoryChart();renderEquipmentChart();}
+function renderCategoryChart(){
+    const container=document.getElementById("categoryChart"); container.innerHTML="";
+    const categories={};
+    state.inventory.forEach(e=>{ categories[e.cat]=(categories[e.cat]||0)+((Number(e.monthlyKwh)||0)*(Number(e.qty)||1)); });
+    const values=Object.values(categories);
+    if(values.length===0){container.innerHTML=`<div class="empty">📊 Sin datos todavía</div>`;return;}
+    const max=Math.max(...values);
+    const colors=["#2563eb","#10b981","#f59e0b","#ef4444","#8b5cf6","#ec4899","#64748b","#14b8a6"];
+    Object.entries(categories).forEach(([cat,value],index)=>{
+        const percent=max>0?(value/max)*100:0;
+        const item=document.createElement("div"); item.className="cat-item";
+        item.innerHTML=`
+            <div class="cat-dot" style="background:${colors[index%colors.length]}"></div>
+            <div class="cat-info">
+                <div class="cat-name">${escapeHTML(cat)}</div>
+                <div class="cat-value">${formatNumber(value,1)} kWh/mes</div>
+                <div class="bar-bg" style="margin-top:4px">
+                    <div class="bar-fill" style="width:${percent}%;background:${colors[index%colors.length]}"></div>
+                </div>
+            </div>`;
+        container.appendChild(item);
+    });
+}
+function renderEquipmentChart(){
+    const container=document.getElementById("equipmentChart"); container.innerHTML="";
+    const sorted=[...state.inventory].sort((a,b)=>(b.dailyKwh*b.qty)-(a.dailyKwh*a.qty)).slice(0,8);
+    if(sorted.length===0){container.innerHTML=`<div class="empty">📊 Sin datos todavía</div>`;return;}
+    const max=Math.max(...sorted.map(e=>e.dailyKwh*e.qty));
+    sorted.forEach(eq=>{
+        const value=eq.dailyKwh*eq.qty; const percent=max>0?(value/max)*100:0;
+        const item=document.createElement("div"); item.className="bar-item";
+        item.innerHTML=`
+            <div class="bar-label"><span>${escapeHTML(eq.name)}</span><strong>${formatNumber(value,2)} kWh/día</strong></div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${percent}%"></div></div>`;
+        container.appendChild(item);
+    });
+}
+function openEdit(id){
+    const eq=state.inventory.find(x=>x.id===id); if(!eq) return;
+    document.getElementById("editId").value=eq.id;
+    document.getElementById("editName").value=eq.name;
+    document.getElementById("editCat").value=eq.cat;
+    document.getElementById("editMethod").value=eq.method||"power";
+    document.getElementById("editPower").value=eq.powerW||"";
+    document.getElementById("editKnownKwh").value=eq.knownKwh||eq.monthlyKwh||"";
+    document.getElementById("editHours").value=eq.hours;
+    document.getElementById("editDays").value=eq.days;
+    document.getElementById("editQty").value=eq.qty;
+    document.getElementById("editVoltage").value=eq.voltage||220;
+    document.getElementById("editPhases").value=eq.phases||1;
+    document.getElementById("editPF").value=eq.pf||.9;
+    document.getElementById("editSavePct").value=eq.individualSavePct||0;
+    toggleEditMethod();
+    document.getElementById("editModal").classList.add("active");
+}
+function toggleEditMethod(){
+    const method=document.getElementById("editMethod").value;
+    document.getElementById("editPowerGroup").style.display=method==="power"?"block":"none";
+    document.getElementById("editKnownGroup").style.display=method==="known"?"block":"none";
+}
+function closeEditModal(){document.getElementById("editModal").classList.remove("active");}
+function saveEdit(event){
+    event.preventDefault();
+    const id=parseInt(document.getElementById("editId").value);
+    const eq=state.inventory.find(x=>x.id===id); if(!eq) return;
+    eq.name=document.getElementById("editName").value.trim();
+    eq.cat=document.getElementById("editCat").value;
+    eq.method=document.getElementById("editMethod").value;
+    eq.hours=parseFloat(document.getElementById("editHours").value);
+    eq.days=parseInt(document.getElementById("editDays").value);
+    eq.qty=parseInt(document.getElementById("editQty").value);
+    eq.voltage=parseFloat(document.getElementById("editVoltage").value)||220;
+    eq.phases=parseInt(document.getElementById("editPhases").value);
+    eq.pf=parseFloat(document.getElementById("editPF").value)||.9;
+    eq.individualSavePct=parseFloat(document.getElementById("editSavePct").value)||0;
+    if(eq.method==="known"){
+        const known=parseFloat(document.getElementById("editKnownKwh").value);
+        if(!Number.isFinite(known)||known<=0){showToast("⚠️ Consumo inválido","error");return;}
+        eq.knownKwh=known;eq.monthlyKwh=known;eq.dailyKwh=known/eq.days;
+        eq.powerW=eq.hours>0?(eq.dailyKwh*1000)/eq.hours:0;
+    }else{
+        const power=parseFloat(document.getElementById("editPower").value);
+        if(!Number.isFinite(power)||power<=0){showToast("️ Potencia inválida","error");return;}
+        eq.powerW=power;eq.knownKwh=null;
+        eq.dailyKwh=(power*eq.hours)/1000;eq.monthlyKwh=eq.dailyKwh*eq.days;
+    }
+    eq.current=calculateCurrent(eq.powerW,eq.voltage,eq.phases,eq.pf);
+    saveData();closeEditModal();updateUI();
+    showToast("✅ Equipo actualizado","success");
+}
+function deleteEquip(id){
+    const eq=state.inventory.find(x=>x.id===id); if(!eq) return;
+    if(!confirm("¿Eliminar "+eq.name+"?")) return;
+    state.inventory=state.inventory.filter(x=>x.id!==id);
+    saveData();updateUI();
+    showToast("️ Equipo eliminado","success");
+}
+function clearInventory(){
+    if(state.inventory.length===0){showToast("ℹ️ El inventario ya está vacío");return;}
+    if(!confirm("¿Seguro que quieres eliminar TODOS los equipos?")) return;
+    state.inventory=[];saveData();updateUI();
+    showToast("🗑️ Inventario limpiado","success");
+}
+function calcSolar(){
+    const daily=getDailyTotal();
+    if(daily<=0){showToast("⚠️ Agrega equipos primero","error");return;}
+    const panelW=parseFloat(document.getElementById("solPanelW").value);
+    const hsp=parseFloat(document.getElementById("solHSP").value);
+    const efficiency=parseFloat(document.getElementById("solEff").value)/100;
+    if(!Number.isFinite(panelW)||panelW<=0||!Number.isFinite(hsp)||hsp<=0||!Number.isFinite(efficiency)||efficiency<=0){
+        showToast("⚠️ Datos solares inválidos","error");return;
+    }
+    const production=(panelW*hsp*efficiency)/1000;
+    const panels=Math.ceil(daily/production);
+    document.getElementById("solarRes").style.display="block";
+    document.getElementById("solPanels").textContent=panels;
+    document.getElementById("solTotal").textContent=(panels*panelW).toLocaleString("es-CO")+" W";
+    document.getElementById("solProd").textContent=production.toFixed(2)+" kWh";
+    let note="Para cubrir aproximadamente "+daily.toFixed(2)+" kWh/día con paneles de "+panelW+" W, "+hsp+" HSP y "+(efficiency*100)+"% de eficiencia.";
+    if(hsp<3.5) note+=" ⚠️ Las HSP son bajas; revise el recurso solar del lugar.";
+    else if(hsp>6) note+=" ☀️ Se está usando una HSP alta; confirme el valor con datos locales.";
+    document.getElementById("solNote").textContent=note;
+}
+function exportData(){
+    const data=JSON.stringify(state,null,2);
+    const blob=new Blob([data],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    link.href=url; link.download="energypro_"+state.projectType+"_"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(link);link.click();link.remove(); URL.revokeObjectURL(url);
+    showToast("📤 Datos exportados correctamente","success");
+}
+function importData(event){
+    const file=event.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+        try{
+            const data=JSON.parse(e.target.result);
+            if(!data||!Array.isArray(data.inventory)) throw new Error("Formato inválido");
+            state={...state,...data,config:{...state.config,...(data.config||{})}};
+            document.getElementById("configTarifa").value=state.config.tarifa;
+            const slider=document.getElementById("globalSaveSlider");
+            if(slider){ slider.value=state.config.globalSavingsPct||0; document.getElementById("globalSaveValue").textContent=(state.config.globalSavingsPct||0)+"%"; }
+            initProjectType();updateUI();saveData();
+            showToast("📥 "+state.inventory.length+" equipos importados","success");
+        }catch(error){ console.error(error); showToast("❌ Archivo JSON inválido","error"); }
+    };
+    reader.readAsText(file); event.target.value="";
+}
+function saveConfig(){
+    const tariff=parseFloat(document.getElementById("configTarifa").value);
+    state.config.tarifa=Number.isFinite(tariff)?tariff:850; saveData();
+}
+function updateUI(){renderInventory();updateDashboard();updateCharts();updateSavingsAnalysis();}
 function formatNumber(value,decimals=2){
-
-    if(!Number.isFinite(Number(value))){
-
-        return "0";
-
-    }
-
-    return Number(value).toLocaleString(
-        "es-CO",
-        {
-            minimumFractionDigits:decimals,
-            maximumFractionDigits:decimals
-        }
-    );
-
+    if(!Number.isFinite(Number(value))) return "0";
+    return Number(value).toLocaleString("es-CO",{minimumFractionDigits:decimals,maximumFractionDigits:decimals});
 }
-
-
-function escapeHTML(value){
-
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-
-}
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
+function escapeHTML(value){ return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
 let toastTimer=null;
-
 function showToast(message,type=""){
-
-    const toast=
-        document.getElementById(
-            "toast"
-        );
-
-    toast.textContent=message;
-
-    toast.className=
-        "toast show "+
-        type;
-
-
-    clearTimeout(toastTimer);
-
-    toastTimer=
-        setTimeout(
-            ()=>{
-                toast.className="toast";
-            },
-            3000
-        );
-
+    const toast=document.getElementById("toast");
+    toast.textContent=message; toast.className="toast show "+type;
+    clearTimeout(toastTimer); toastTimer=setTimeout(()=>{toast.className="toast";},3000);
 }
-
-
-/* =====================================================
-   MODAL
-===================================================== */
-
-document
-.getElementById("editModal")
-.addEventListener(
-    "click",
-    function(event){
-
-        if(
-            event.target===
-            event.currentTarget
-        ){
-
-            closeEditModal();
-
-        }
-
-    }
-);
-
-
-document.addEventListener(
-    "keydown",
-    function(event){
-
-        if(
-            event.key==="Escape"
-        ){
-
-            closeEditModal();
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   COMPATIBILIDAD CON DATOS ANTIGUOS
-===================================================== */
-
+document.getElementById("editModal").addEventListener("click",function(event){ if(event.target===event.currentTarget) closeEditModal(); });
+document.addEventListener("keydown",function(event){ if(event.key==="Escape") closeEditModal(); });
 function normalizeOldData(){
-
-    state.inventory=
-        state.inventory.map(eq=>{
-
-            if(!eq.method){
-
-                eq.method=
-                    eq.isKnown
-                    ?"known"
-                    :"power";
-
-            }
-
-            if(
-                eq.knownKwh===undefined
-            ){
-
-                eq.knownKwh=
-                    eq.isKnown
-                    ?eq.monthlyKwh
-                    :null;
-
-            }
-            
-            if(eq.individualSavePct === undefined) {
-                eq.individualSavePct = 0;
-            }
-
-            return eq;
-
-        });
-
+    state.inventory=state.inventory.map(eq=>{
+        if(!eq.method) eq.method=eq.isKnown?"known":"power";
+        if(eq.knownKwh===undefined) eq.knownKwh=eq.isKnown?eq.monthlyKwh:null;
+        if(eq.individualSavePct===undefined) eq.individualSavePct=0;
+        return eq;
+    });
 }
-
 normalizeOldData();
 
+/* =====================================================
+   FUNCIÓN DE ENVÍO A GOOGLE SHEETS Y CORREO
+===================================================== */
+function sendReportToGoogle() {
+    if (state.inventory.length === 0) {
+        showToast("⚠️ Agrega al menos un equipo para generar el informe", "error");
+        return;
+    }
+    
+    saveClientData();
+    
+    const clientEmail = document.getElementById("clientEmail").value.trim();
+    if (!clientEmail || !clientEmail.includes('@')) {
+        showToast("⚠️ Ingresa un email válido del cliente", "error");
+        return;
+    }
+    
+    if (GOOGLE_SCRIPT_URL.includes("AQUI_TU_ID_DE_WEBAPP")) {
+        showToast("⚠️ Configura la URL del Web App en el código", "error");
+        return;
+    }
+    
+    showToast("📤 Generando informe y enviando al correo...", "success");
+    
+    const payload = {
+        timestamp: new Date().toISOString(),
+        clientData: state.clientData,
+        projectType: state.projectType,
+        projectTypeName: getTypeName(state.projectType),
+        config: state.config,
+        inventory: state.inventory,
+        summary: {
+            totalEquipment: state.inventory.length,
+            dailyKwh: getDailyTotal(),
+            monthlyKwh: getMonthlyTotal(),
+            installedKW: getInstalledPower() / 1000,
+            demandKW: calculateDemand() / 1000,
+            monthlyCost: getMonthlyTotal() * (state.config.tarifa || 850),
+            savingsKwh: calculateTotalSavings().kwh,
+            savingsMoney: calculateTotalSavings().money,
+            savingsCO2: calculateTotalSavings().co2
+        }
+    };
+    
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).then(() => {
+        showToast(`✅ ¡Informe enviado a ${clientEmail}!`, "success");
+    }).catch(error => {
+        console.error(error);
+        showToast("❌ Error al enviar. Verifica la configuración", "error");
+    });
+}
 </script>
-
 </body>
 </html>
