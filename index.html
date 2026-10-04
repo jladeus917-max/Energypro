@@ -341,9 +341,9 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 
 <script>
 /* =====================================================
-   CONFIGURACIÓN: PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT
+   CONFIGURACIÓN: TU URL DE GOOGLE APPS SCRIPT YA ESTÁ AQUÍ
 ===================================================== */
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AQUI_TU_ID_DE_WEBAPP/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxj6Uve75Nu3xERoynGHF64ZFAxRdz0W_cIyWvyYQxdRlsXk1TH8G8MhiRl0xLNLkT6/exec";
 
 /* =====================================================
    BASE DE DATOS
@@ -745,7 +745,7 @@ function saveEdit(event){
         eq.powerW=eq.hours>0?(eq.dailyKwh*1000)/eq.hours:0;
     }else{
         const power=parseFloat(document.getElementById("editPower").value);
-        if(!Number.isFinite(power)||power<=0){showToast("️ Potencia inválida","error");return;}
+        if(!Number.isFinite(power)||power<=0){showToast("⚠️ Potencia inválida","error");return;}
         eq.powerW=power;eq.knownKwh=null;
         eq.dailyKwh=(power*eq.hours)/1000;eq.monthlyKwh=eq.dailyKwh*eq.days;
     }
@@ -758,7 +758,7 @@ function deleteEquip(id){
     if(!confirm("¿Eliminar "+eq.name+"?")) return;
     state.inventory=state.inventory.filter(x=>x.id!==id);
     saveData();updateUI();
-    showToast("️ Equipo eliminado","success");
+    showToast("🗑️ Equipo eliminado","success");
 }
 function clearInventory(){
     if(state.inventory.length===0){showToast("ℹ️ El inventario ya está vacío");return;}
@@ -857,11 +857,6 @@ function sendReportToGoogle() {
         return;
     }
     
-    if (GOOGLE_SCRIPT_URL.includes("AQUI_TU_ID_DE_WEBAPP")) {
-        showToast("⚠️ Configura la URL del Web App en el código", "error");
-        return;
-    }
-    
     showToast("📤 Generando informe y enviando al correo...", "success");
     
     const payload = {
@@ -890,7 +885,7 @@ function sendReportToGoogle() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     }).then(() => {
-        showToast(`✅ ¡Informe enviado a ${clientEmail}!`, "success");
+        showToast(`✅ ¡Informe enviado a ${clientEmail} y a juanladeusladeus@gmail.com!`, "success");
     }).catch(error => {
         console.error(error);
         showToast("❌ Error al enviar. Verifica la configuración", "error");
