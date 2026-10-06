@@ -125,10 +125,10 @@ input[type=range]{width:100%;accent-color:var(--accent);}
     <div style="flex:1;">
         <strong style="color:var(--primary);">📄 Generación y Envío de Informes</strong>
         <p style="font-size:0.85rem;color:var(--light);margin-top:5px;">
-            Complete los datos del cliente. Al enviar, se guardará en Sheets y se enviará un PDF al correo.
+            Complete los datos del cliente. Al presionar el botón, EnergyPro guardará la auditoría en Google Sheets y enviará automáticamente el PDF al correo configurado.
         </p>
     </div>
-    <button class="btn btn-success" onclick="sendReportToGoogle()">🚀 Generar, Guardar y Enviar PDF</button>
+    <button class="btn btn-success" onclick="sendReportToGoogle()">🚀 Generar informe</button>
 </div>
 
 <!-- DATOS DEL CLIENTE -->
@@ -139,7 +139,7 @@ input[type=range]{width:100%;accent-color:var(--accent);}
         <div class="input-group"><label>NIT / Identificación</label><input type="text" id="clientNit" placeholder="Ej: 900.123.456-7" onchange="saveClientData()"></div>
         <div class="input-group"><label>Dirección del Proyecto</label><input type="text" id="clientAddress" placeholder="Ej: Calle 100 # 50-20" onchange="saveClientData()"></div>
         <div class="input-group"><label>Teléfono de Contacto</label><input type="text" id="clientPhone" placeholder="Ej: +57 300 123 4567" onchange="saveClientData()"></div>
-        <div class="input-group"><label>Email de Contacto</label><input type="email" id="clientEmail" placeholder="cliente@empresa.com" onchange="saveClientData()"></div>
+        <div class="input-group"><label>Email de Contacto (opcional)</label><input type="email" id="clientEmail" placeholder="cliente@empresa.com" onchange="saveClientData()"></div>
         <div class="input-group"><label>Nombre del Auditor</label><input type="text" id="auditorName" placeholder="Ej: Ing. Juan Pérez" onchange="saveClientData()"></div>
         <div class="input-group"><label>Fecha de Auditoría</label><input type="date" id="auditDate" onchange="saveClientData()"></div>
         <div class="input-group"><label>N° de Informe</label><input type="text" id="reportNumber" placeholder="Ej: AUD-2026-001" onchange="saveClientData()"></div>
@@ -179,10 +179,7 @@ input[type=range]{width:100%;accent-color:var(--accent);}
             <span style="font-size:.8rem;color:var(--light)">COP/kWh</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="exportData()">📤 Exportar</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Importar</button>
             <button class="btn btn-danger" onclick="clearInventory()">🗑️ Limpiar</button>
-            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
         </div>
     </div>
 </div>
@@ -382,7 +379,8 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 /* =====================================================
    CONFIGURACIÓN: TU URL DE GOOGLE APPS SCRIPT YA ESTÁ AQUÍ
 ===================================================== */
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwugCfbiiAz9JVCjvAqElPg_zNeauwGaXeJOaHfKBgyrs6aiRztVo6U7EXyEU-bPyr6Cg/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqkCrgvEjKX5MATFg7_2vcm3lw-KEquuKWzN6OW52_5XFA9-x_lRt2p7hlOQhWJiW6Xg/exec";
+const ENERGYPRO_DESTINATION_EMAIL = "jladeus917@mail.com";
 
 /* =====================================================
    BASE DE DATOS
@@ -921,63 +919,102 @@ setSolarMode(state.solarMode||"noBattery");
    FUNCIÓN DE ENVÍO A GOOGLE SHEETS Y CORREO
 ===================================================== */
 function sendReportToGoogle() {
-    if (state.inventory.length === 0) {
-        showToast("⚠️ Agrega al menos un equipo para generar el informe", "error");
+    if (!state.inventory || state.inventory.length === 0) {
+        showToast("⚠️ Agrega al menos un equipo antes de generar el informe.", "error");
         return;
     }
+
     saveClientData();
-    const clientEmail=document.getElementById("clientEmail").value.trim();
-    if(!clientEmail||!clientEmail.includes("@")){showToast("⚠️ Ingresa un email válido del cliente","error");return;}
-    const solar=state.solar||null;
-    const savings=calculateTotalSavings();
-    const summary={
-        totalEquipment:state.inventory.length,
-        dailyKwh:getDailyTotal(),
-        monthlyKwh:getMonthlyTotal(),
-        installedKW:getInstalledPower()/1000,
-        demandKW:calculateDemand()/1000,
-        monthlyCost:getMonthlyTotal()*(state.config.tarifa||850),
-        savingsKwh:savings.kwh,
-        savingsMoney:savings.money,
-        savingsCO2:savings.co2,
-        solar:solar
+
+    // Recalcular tarifa y todos los indicadores con los datos actuales.
+    const tariff = parseFloat(document.getElementById("configTarifa").value) || 850;
+    state.config.tarifa = tariff;
+
+    // Recalcular solar automáticamente antes de enviar.
+    calcSolar();
+
+    const savings = calculateTotalSavings();
+    const solar = state.solar || {
+        mode: state.solarMode || "noBattery",
+        panelW: parseFloat(document.getElementById("solPanelW").value) || 650,
+        hsp: parseFloat(document.getElementById("solHSP").value) || 5,
+        efficiency: parseFloat(document.getElementById("solEff").value) || 80,
+        productionPerPanel: 0,
+        panels: 0,
+        totalW: 0,
+        dailyKwh: getDailyTotal()
     };
-    const payload={
-        action:"sendReport",
-        timestamp:new Date().toISOString(),
-        clientData:state.clientData,
-        projectType:state.projectType,
-        projectTypeName:getTypeName(state.projectType),
-        config:state.config,
-        inventory:state.inventory,
-        reportData:summary,
-        summary:summary
+
+    const summary = {
+        totalEquipment: state.inventory.length,
+        dailyKwh: Number(getDailyTotal()) || 0,
+        monthlyKwh: Number(getMonthlyTotal()) || 0,
+        monthlyCost: Number(getMonthlyTotal() * tariff) || 0,
+        installedKW: Number(getInstalledPower() / 1000) || 0,
+        demandKW: Number(calculateDemand() / 1000) || 0,
+        savingsKwh: Number(savings.kwh) || 0,
+        savingsMoney: Number(savings.money) || 0,
+        savingsAnnualMoney: Number(savings.money * 12) || 0,
+        savingsCO2: Number(savings.co2) || 0,
+        solar: solar
     };
-    showToast("📤 Generando informe, PDF y enviando al correo...","success");
-    const button=document.querySelector('.report-actions button');
-    if(button){button.disabled=true;button.dataset.oldText=button.textContent;button.textContent="⏳ Enviando...";}
-    fetch(GOOGLE_SCRIPT_URL,{
-        method:"POST",
-        headers:{"Content-Type":"text/plain;charset=utf-8"},
-        body:JSON.stringify(payload)
+
+    const payload = {
+        version: "EnergyPro-2026-10",
+        action: "sendReport",
+        timestamp: new Date().toISOString(),
+        destinationEmail: ENERGYPRO_DESTINATION_EMAIL,
+        clientData: { ...state.clientData },
+        projectType: state.projectType,
+        projectTypeName: getTypeName(state.projectType),
+        config: { ...state.config, tarifa: tariff },
+        inventory: state.inventory.map(eq => ({ ...eq })),
+        summary: summary,
+        reportData: summary,
+        solar: solar
+    };
+
+    const button = document.querySelector('.report-actions button');
+    if (button) {
+        button.disabled = true;
+        button.dataset.oldText = button.textContent;
+        button.textContent = "⏳ Generando y enviando...";
+    }
+
+    showToast("📤 Generando informe completo y enviándolo a tu correo...", "success");
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
     })
-    .then(async response=>{
-        const text=await response.text();
+    .then(async response => {
+        const text = await response.text();
         let result;
-        try{result=JSON.parse(text);}catch(e){throw new Error("El servidor respondió con un formato no válido.");}
-        if(!result.success) throw new Error(result.error||"Apps Script no pudo generar el informe.");
+        try {
+            result = JSON.parse(text);
+        } catch (err) {
+            throw new Error("El Apps Script no devolvió una respuesta JSON válida. Revisa que hayas implementado la versión nueva del Code.gs.");
+        }
+        if (!result.success) {
+            throw new Error(result.error || "Apps Script no pudo guardar o enviar el informe.");
+        }
         return result;
     })
-    .then(result=>{
-        showToast("✅ Informe generado, guardado y enviado correctamente.","success");
-        console.log("EnergyPro respuesta:",result);
+    .then(result => {
+        const msg = "✅ Informe completo enviado y guardado. Revisa " + ENERGYPRO_DESTINATION_EMAIL + ".";
+        showToast(msg, "success");
+        console.log("EnergyPro OK:", result);
     })
-    .catch(error=>{
-        console.error("EnergyPro envío:",error);
-        showToast("❌ No se pudo enviar: "+error.message,"error");
+    .catch(error => {
+        console.error("EnergyPro ERROR:", error);
+        showToast("❌ " + error.message, "error");
     })
-    .finally(()=>{
-        if(button){button.disabled=false;button.textContent=button.dataset.oldText||"🚀 Generar, Guardar y Enviar PDF";}
+    .finally(() => {
+        if (button) {
+            button.disabled = false;
+            button.textContent = button.dataset.oldText || "🚀 Generar informe";
+        }
     });
 }
 </script>
