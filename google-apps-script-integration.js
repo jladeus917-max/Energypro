@@ -1,7 +1,7 @@
  /* EnergyPro → Google Apps Script (Hoja + Correo) */
 (() => {
-  // ⬇️ PEGA AQUÍ LA NUEVA URL DEL APPS SCRIPT
-  const WEB_APP_URL = "https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXXXXXX/exec";
+  // URL de tu Apps Script
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyceXmVEXgbJf5upjSxVWcUm8sGuc_CnbtPM-vnyHROdsIj1wl6QFyQqYhCUJ_A5af1rA/exec";
 
   const originalGenerateReport = window.generateReport;
 
@@ -52,7 +52,7 @@
       }))
     };
 
-    // Envío compatible con Apps Script (sin CORS problemático)
+    // Envío compatible con Apps Script
     const body = new URLSearchParams({ payload: JSON.stringify(payload) });
 
     fetch(WEB_APP_URL, {
