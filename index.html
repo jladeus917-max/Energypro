@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -521,17 +521,11 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 
 <script>
 /* =====================================================
-   CONFIGURACIÓN API IA
+   CONFIGURACIÓN API IA (vía Google Apps Script)
+   - No se expone ninguna API key en el frontend
+   - Ideal para GitHub Pages
 ===================================================== */
-const API_CONFIG = {
-  key: "sk-ae8557106fc44469ae1035dd70d21b76",
-  // Múltiples endpoints compatibles con OpenAI (por si uno falla)
-  endpoints: [
-    { url: "https://api.openai.com/v1/chat/completions", model: "gpt-3.5-turbo" },
-    { url: "https://openrouter.ai/api/v1/chat/completions", model: "openai/gpt-3.5-turbo" },
-    { url: "https://api.groq.com/openai/v1/chat/completions", model: "llama-3.3-70b-versatile" }
-  ]
-};
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywtB4nRb5q4S4265r35wiqjdXfzyAYqOZuvKT4Ufk8zg9akk6JMv-khzJ1utSwxPs/exec";
 
 /* =====================================================
    BASE DE DATOS DE PRESETS
@@ -1534,35 +1528,40 @@ function updateChatStatus(status){
 }
 
 async function callAI(messages){
-  // Intentar con cada endpoint
-  for(const endpoint of API_CONFIG.endpoints){
-    try{
-      const response = await fetch(endpoint.url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_CONFIG.key}`
-        },
-        body: JSON.stringify({
-          model: endpoint.model,
-          messages: messages,
-          temperature: 0.7,
-          max_tokens: 800
-        })
-      });
-      
-      if(!response.ok) continue;
-      
-      const data = await response.json();
-      if(data.choices && data.choices[0] && data.choices[0].message){
-        return data.choices[0].message.content;
-      }
-    }catch(error){
-      console.log(`Endpoint ${endpoint.url} falló:`, error.message);
-      continue;
-    }
+  // Llamada al proxy de Google Apps Script (evita CORS y oculta la API key)
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: {
+      // text/plain evita preflight CORS complicado con Apps Script
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({
+      messages: messages,
+      temperature: 0.7,
+      max_tokens: 800
+    })
+  });
+
+  if(!response.ok){
+    throw new Error("Error HTTP " + response.status);
   }
-  throw new Error("Todos los endpoints de IA fallaron");
+
+  const data = await response.json();
+
+  // Soporta varios formatos de respuesta del Apps Script
+  if(typeof data === "string") return data;
+  if(data.reply) return data.reply;
+  if(data.content) return data.content;
+  if(data.message) return data.message;
+  if(data.choices && data.choices[0] && data.choices[0].message){
+    return data.choices[0].message.content;
+  }
+  if(data.result) return data.result;
+  if(data.text) return data.text;
+
+  throw new Error("Formato de respuesta no reconocido del Apps Script");
 }
 
 // Respuestas locales de respaldo
@@ -1638,8 +1637,88 @@ async function sendMessage(){
 function handleChatKey(event){
   if(event.key === "Enter" && !isProcessing) sendMessage();
 }
-</script>
 
-<script src="google-apps-script-integration.js"></script>
+/* =====================================================
+   INTEGRACIÓN GOOGLE SHEETS + CORREO
+   (incluido dentro del HTML para evitar problemas de carga)
+===================================================== */
+(function() {
+  // ⬇️ URL de tu Apps Script (cámbiala si creas una nueva implementación)
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyceXmVEXgbJf5upjSxVWcUm8sGuc_CnbtPM-vnyHROdsIj1wl6QFyQqYhCUJ_A5af1rA/exec";
+
+  // Esperamos a que exista la función original
+  const waitForGenerateReport = setInterval(function() {
+    if (typeof window.generateReport === "function") {
+      clearInterval(waitForGenerateReport);
+      const originalGenerateReport = window.generateReport;
+
+      window.generateReport = function() {
+        // 1. Ejecutar comportamiento original (copiar / descargar)
+        const result = originalGenerateReport.apply(this, arguments);
+
+        // 2. Solo enviar si hay equipos
+        if (!Array.isArray(state.inventory) || state.inventory.length === 0) {
+          return result;
+        }
+
+        const payload = {
+          type: "energypro_audit_report",
+          sentAt: new Date().toISOString(),
+          client: Object.assign({}, state.clientData),
+          projectType: state.projectType,
+          tariff: Number(state.config.tarifa) || 0,
+          summary: {
+            equipmentCount: state.inventory.length,
+            dailyKwh: getDailyTotal(),
+            monthlyKwh: getMonthlyTotal(),
+            monthlyCost: getMonthlyTotal() * (Number(state.config.tarifa) || 0),
+            installedKw: getInstalledPower() / 1000,
+            estimatedDemandKw: calculateDemand() / 1000,
+            savings: calculateTotalSavings()
+          },
+          inventory: state.inventory.map(function(eq) {
+            return {
+              id: eq.id,
+              name: eq.name,
+              category: eq.cat,
+              method: eq.method,
+              powerW: eq.powerW,
+              knownKwh: eq.knownKwh,
+              hours: eq.hours,
+              days: eq.days,
+              quantity: eq.qty,
+              voltage: eq.voltage,
+              phases: eq.phases,
+              powerFactor: eq.pf,
+              dailyKwh: eq.dailyKwh,
+              monthlyKwh: eq.monthlyKwh,
+              individualSavingsPct: eq.individualSavePct
+            };
+          })
+        };
+
+        // Envío (mode no-cors es necesario con Apps Script desde GitHub Pages)
+        const body = new URLSearchParams({ payload: JSON.stringify(payload) });
+
+        fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: body
+        }).then(function() {
+          showToast("📤 Informe enviado a Google Sheets + correo", "success");
+        }).catch(function(error) {
+          console.error("Error al enviar informe:", error);
+          showToast("⚠️ No se pudo enviar el informe", "error");
+        });
+
+        return result;
+      };
+
+      console.log("EnergyPro → Integración Google Sheets lista");
+    }
+  }, 100);
+})();
+</script>
 </body>
 </html>
