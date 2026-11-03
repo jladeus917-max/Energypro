@@ -1,21 +1,22 @@
-/* EnergyPro → Google Apps Script report integration.
- * Include this file after the existing inline application script in index.html.
- * The Apps Script doPost(e) handler should read JSON.parse(e.parameter.payload).
- */
+ /* EnergyPro → Google Apps Script (Hoja + Correo) */
 (() => {
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxgahZKJS1-ZvtueCeqJxUyMyN1OGHopBzDI6uI6eLZqzTkFBrxXcKV2NdWTMzwqa4/exec";
+  // ⬇️ PEGA AQUÍ LA NUEVA URL DEL APPS SCRIPT
+  const WEB_APP_URL = "https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXXXXXX/exec";
+
   const originalGenerateReport = window.generateReport;
 
   if (typeof originalGenerateReport !== "function") {
-    console.error("EnergyPro report function was not found; load this script after the application script.");
+    console.error("No se encontró generateReport. Carga este script después del principal.");
     return;
   }
 
   window.generateReport = function (...args) {
+    // Primero ejecuta el comportamiento original (copiar/descargar)
     const result = originalGenerateReport.apply(this, args);
 
-    // The existing report flow requires at least one equipment entry.
-    if (!Array.isArray(state.inventory) || state.inventory.length === 0) return result;
+    if (!Array.isArray(state.inventory) || state.inventory.length === 0) {
+      return result;
+    }
 
     const payload = {
       type: "energypro_audit_report",
@@ -32,24 +33,37 @@
         estimatedDemandKw: calculateDemand() / 1000,
         savings: calculateTotalSavings()
       },
-      inventory: state.inventory.map(({ id, name, cat, method, powerW, knownKwh, hours, days, qty, voltage, phases, pf, dailyKwh, monthlyKwh, individualSavePct }) => ({
-        id, name, category: cat, method, powerW, knownKwh, hours, days, quantity: qty,
-        voltage, phases, powerFactor: pf, dailyKwh, monthlyKwh, individualSavingsPct: individualSavePct
+      inventory: state.inventory.map(eq => ({
+        id: eq.id,
+        name: eq.name,
+        category: eq.cat,
+        method: eq.method,
+        powerW: eq.powerW,
+        knownKwh: eq.knownKwh,
+        hours: eq.hours,
+        days: eq.days,
+        quantity: eq.qty,
+        voltage: eq.voltage,
+        phases: eq.phases,
+        powerFactor: eq.pf,
+        dailyKwh: eq.dailyKwh,
+        monthlyKwh: eq.monthlyKwh,
+        individualSavingsPct: eq.individualSavePct
       }))
     };
 
-    // URL-encoded POST avoids a cross-origin JSON preflight. Apps Script must
-    // accept a form parameter named "payload" and parse it as JSON.
+    // Envío compatible con Apps Script (sin CORS problemático)
     const body = new URLSearchParams({ payload: JSON.stringify(payload) });
+
     fetch(WEB_APP_URL, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body
     }).then(() => {
-      showToast("📤 Informe enviado a Google Apps Script", "success");
+      showToast("📤 Informe enviado a Google Sheets + correo", "success");
     }).catch((error) => {
-      console.error("No se pudo enviar el informe a Google Apps Script:", error);
+      console.error("Error al enviar informe:", error);
       showToast("⚠️ No se pudo enviar el informe", "error");
     });
 
